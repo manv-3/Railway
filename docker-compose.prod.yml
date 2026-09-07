@@ -1,0 +1,138 @@
+version: '3.8'
+
+# Production Docker Compose for PS 26027 - Railway AI Block Planning Platform
+# Includes: PostgreSQL, Redis, Celery Worker, FastAPI Backend, Nginx Frontend, Prometheus, Grafana
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: railway_postgres_prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-railway_ai}
+      POSTGRES_USER: ${POSTGRES_USER:-railway}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}   # Required - no default in prod
+    volumes:
+      - railway_postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-railway} -d ${POSTGRES_DB:-railway_ai}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - railway-prod-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: railway_redis_prod
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - railway_redis_prod_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - railway-prod-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: railway_backend_prod
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-railway}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-railway_ai}
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY}         # Required - no default in prod
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - APP_ENV=production
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - railway-prod-net
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: railway_celery_worker_prod
+    restart: unless-stopped
+    command: celery -A tasks.celery_app worker --loglevel=info --concurrency=4
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-railway}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-railway_ai}
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - APP_ENV=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - railway-prod-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: railway_frontend_prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - railway-prod-net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: railway_prometheus_prod
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+    volumes:
+      - ./infrastructure/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - railway_prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - railway-prod-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: railway_grafana_prod
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-railway_grafana_2026}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - railway_grafana_data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana_dashboard.json:/var/lib/grafana/dashboards/railway_dashboard.json:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - railway-prod-net
+
+volumes:
+  railway_postgres_prod_data:
+  railway_redis_prod_data:
+  railway_prometheus_data:
+  railway_grafana_data:
+
+networks:
+  railway-prod-net:
+    driver: bridge
