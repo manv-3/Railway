@@ -1,2140 +1,352 @@
-# PS 26027: Block Planning System - Implementation Plan
+# PS 26027: Enterprise Railway Block Planning Platform
+## Comprehensive 3-Phase Implementation Plan
 
-## Project Timeline Overview
+**Target System**: Indian Railways Multi-Department Maintenance Optimization  
+**Architecture Version**: 2.0 (4-Tier Enterprise Architecture)  
+**Total Duration**: 12 Weeks (6 Sprints of 2 Weeks Each)  
+**Team Allocation**: 4–6 Engineers (Backend, Optimization/Algorithm, ML, Frontend, Data/DevOps)
 
-**Total Duration**: 12 weeks  
-**Team Size**: 4-6 developers  
-**Methodology**: Agile with 2-week sprints  
+---
+
+## Executive Phase Breakdown at a Glance
 
 ```
-Phase 1: Foundation (Weeks 1-4)
-├── Sprint 1: Infrastructure & Data (Weeks 1-2)
-└── Sprint 2: Basic Optimization (Weeks 3-4)
-
-Phase 2: Advanced Features (Weeks 5-8)
-├── Sprint 3: ML & Explainability (Weeks 5-6)
-└── Sprint 4: UI/UX & Simulation (Weeks 7-8)
-
-Phase 3: Production Ready (Weeks 9-12)
-├── Sprint 5: Testing & Polish (Weeks 9-10)
-└── Sprint 6: Deployment & Demo (Weeks 11-12)
+╔═══════════════════════════════════════════════════════════════════════════════════════╗
+║                      PHASE 1: THE CORE TACTICAL ENGINE & POC (Weeks 1-4)               ║
+║                                  "Make the Core Work"                                 ║
+╠═══════════════════════════════════════════════════════════════════════════════════════╣
+║ • Sprint 1 (W1-2): Infrastructure, PostGIS Schemas, Realistic Delhi-Kanpur Corridor   ║
+║ • Sprint 2 (W3-4): OR-Tools CP-SAT Bundler, Basic Divisional Cockpit, 1-Click Optimize║
+║ 🎯 Milestone: End-to-end working prototype collapsing 5.5h separate blocks into 2h.   ║
+╚═══════════════════════════════════════════════════════════════════════════════════════╝
+                                          │
+                                          ▼
+╔═══════════════════════════════════════════════════════════════════════════════════════╗
+║              PHASE 2: ENTERPRISE HIERARCHY, INTELLIGENCE & SAFETY (Weeks 5-8)         ║
+║                              "Make It Authentic & Smart"                              ║
+╠═══════════════════════════════════════════════════════════════════════════════════════╣
+║ • Sprint 3 (W5-6): 4-Tier Admin Portals (/field, /division, /zone, /board) + Safety   ║
+║   Memos (Disconnection, Traction PTW, Track Fit, Caution Order TSRs)                  ║
+║ • Sprint 4 (W7-8): XGBoost + SHAP Priority Model, LLM Reasoner, What-If Simulator     ║
+║ 🎯 Milestone: Full-featured demo with emergency replanning and operational memos.     ║
+╚═══════════════════════════════════════════════════════════════════════════════════════╝
+                                          │
+                                          ▼
+╔═══════════════════════════════════════════════════════════════════════════════════════╗
+║             PHASE 3: PRODUCTION HARDENING, SCALE & COMPETITION WIN (Weeks 9-12)       ║
+║                                "Make It Enterprise-Ready"                             ║
+╠═══════════════════════════════════════════════════════════════════════════════════════╣
+║ • Sprint 5 (W9-10): Cross-Division Corridor Sync, Machine Fleet Routing, 85%+ Tests   ║
+║ • Sprint 6 (W11-12): Cloud Deployment, Documentation, Backup Video, Pitch Rehearsal   ║
+║ 🎯 Milestone: Production deployment, flawless 15-minute pitch, judge Q&A defense.     ║
+╚═══════════════════════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-# PHASE 1: Foundation & Proof of Concept (Weeks 1-4)
+# PHASE 1: The Core Tactical Engine & Divisional POC (Weeks 1–4)
 
-## Phase 1 Goals
-✓ Working end-to-end system  
-✓ Basic optimization functional  
-✓ Synthetic data generation  
-✓ Simple UI prototype  
-✓ Development environment established  
-
----
-
-## Sprint 1: Infrastructure & Data (Weeks 1-2)
-
-### Week 1: Project Setup & Infrastructure
-
-#### Day 1-2: Project Initialization
-
-**Backend Setup**
-```bash
-Tasks:
-□ Create repository structure
-□ Initialize Python project (requirements.txt)
-□ Set up virtual environment
-□ Configure FastAPI project structure
-□ Set up Alembic for migrations
-□ Create .env.example and configuration management
-□ Set up logging framework
-□ Initialize Git with .gitignore
-
-Deliverables:
-- Working backend skeleton
-- Configuration management
-- Environment variables setup
-- Logging configured
-
-Team: Backend Lead + DevOps
-Time: 8-12 hours
-```
-
-**Frontend Setup**
-```bash
-Tasks:
-□ Create React + TypeScript project (Vite)
-□ Set up project structure
-□ Install core dependencies (MUI, Redux, React Router)
-□ Configure ESLint and Prettier
-□ Set up environment variables
-□ Create basic routing structure
-□ Set up Axios/API client
-
-Deliverables:
-- Working frontend skeleton
-- Routing configured
-- API client setup
-- Development server running
-
-Team: Frontend Lead
-Time: 8-12 hours
-```
-
-**Infrastructure Setup**
-```bash
-Tasks:
-□ Create docker-compose.yml
-□ Set up PostgreSQL container (with PostGIS)
-□ Set up Redis container
-□ Set up RabbitMQ container (optional for Phase 1)
-□ Set up pgAdmin container
-□ Set up Redis Commander container
-□ Test all containers start successfully
-□ Document setup process
-
-Deliverables:
-- docker-compose.yml
-- All services running
-- README with setup instructions
-
-Team: DevOps/Backend Lead
-Time: 4-6 hours
-```
-
-#### Day 3-5: Database & Data Models
-
-**Database Schema**
-```sql
-Tasks:
-□ Create Alembic migration for initial schema
-□ Implement tables:
-  - sections
-  - maintenance_requests
-  - maintenance_blocks
-  - block_maintenance_assignments
-  - optimization_runs
-  - train_schedules
-  - users (basic)
-□ Add indexes
-□ Add constraints
-□ Test migrations (up and down)
-□ Seed initial data (sections, test users)
-
-Deliverables:
-- Complete database schema
-- Migration scripts
-- Seed data script
-- Database documentation
-
-Team: Backend Lead + Data Engineer
-Time: 12-16 hours
-```
-
-**SQLAlchemy Models**
-```python
-Tasks:
-□ Create base model class
-□ Implement Section model
-□ Implement MaintenanceRequest model
-□ Implement MaintenanceBlock model
-□ Implement OptimizationRun model
-□ Implement TrainSchedule model
-□ Implement User model (basic)
-□ Add relationships
-□ Add model methods (to_dict, etc.)
-□ Write unit tests for models
-
-Deliverables:
-- All SQLAlchemy models
-- Model tests
-- data/models.py
-
-Team: Backend Lead
-Time: 8-12 hours
-```
-
-**Repository Layer**
-```python
-Tasks:
-□ Create base repository class
-□ Implement MaintenanceRequestRepository
-  - CRUD operations
-  - Get pending requests
-  - Filter by status, section, department
-□ Implement BlockRepository
-  - CRUD operations
-  - Get blocks by date range
-  - Conflict detection
-□ Implement SectionRepository
-  - Read operations
-  - Geospatial queries (if using PostGIS)
-□ Write repository tests
-
-Deliverables:
-- Repository classes
-- Repository tests
-- data/repositories.py
-
-Team: Backend Developer
-Time: 8-12 hours
-```
-
-#### Day 6-10: Synthetic Data Generation
-
-**Data Generators**
-```python
-Tasks:
-□ Create railway corridor data
-  - 5-10 railway sections (Delhi-Ambala corridor example)
-  - Station coordinates
-  - Section characteristics
-□ Implement TMSDataGenerator
-  - Generate track maintenance requests
-  - Realistic defect types, severities
-  - Random distributions
-□ Implement SMMSDataGenerator
-  - Generate signalling maintenance requests
-□ Implement TDMSDataGenerator
-  - Generate traction maintenance requests
-□ Implement TrainScheduleGenerator
-  - Generate train timetables
-  - Passenger and freight trains
-  - Realistic timings
-□ Create data generation CLI script
-□ Generate test datasets (small, medium, large)
-
-Deliverables:
-- Complete synthetic data generators
-- CLI script: python generate_data.py --size medium
-- Sample datasets (committed to repo)
-- data/generators/ directory
-
-Team: Data Engineer + Backend Developer
-Time: 16-20 hours
-```
-
-**Sample Data Structure**
-```python
-# Example maintenance request generation
-maintenance_requests = [
-    {
-        "request_id": "TMS_2026_08_001",
-        "department": "TMS",
-        "section_id": "SEC_NDLS_GZB",
-        "asset_type": "track",
-        "asset_id": "TRACK_KM_42",
-        "defect_type": "rail_crack",
-        "severity": "high",
-        "description": "Rail crack detected at KM 42.5",
-        "estimated_duration_minutes": 120,
-        "due_date": "2026-08-25T10:00:00",
-        "metadata": {
-            "inspector": "John Doe",
-            "inspection_date": "2026-08-22"
-        }
-    },
-    # ... more requests
-]
-
-# Example train schedule
-train_schedules = [
-    {
-        "train_number": "12001",
-        "train_name": "Shatabdi Express",
-        "train_type": "passenger",
-        "source_station": "NDLS",
-        "destination_station": "LDH",
-        "scheduled_departure": "2026-08-25T06:00:00",
-        "route": [
-            {"station": "NDLS", "arrival": None, "departure": "06:00", "section": "SEC_NDLS_GZB"},
-            {"station": "GZB", "arrival": "06:45", "departure": "06:50", "section": "SEC_GZB_MUT"},
-            # ... more stations
-        ]
-    },
-    # ... more trains
-]
-```
-
-### Week 2: Basic API & Optimization
-
-#### Day 1-3: Core API Endpoints
-
-**Authentication & Users**
-```python
-Tasks:
-□ Implement JWT authentication
-□ Create /api/v1/auth/login endpoint
-□ Create /api/v1/auth/refresh endpoint
-□ Create authentication middleware
-□ Create user dependency injection
-□ Simple RBAC (basic roles)
-□ Write auth tests
-
-Deliverables:
-- Working authentication
-- api/middleware/auth.py
-- api/routes/auth.py
-- Auth tests
-
-Team: Backend Developer
-Time: 8-12 hours
-```
-
-**Maintenance Request API**
-```python
-Tasks:
-□ Implement POST /api/v1/maintenance/requests
-□ Implement GET /api/v1/maintenance/requests (list with filters)
-□ Implement GET /api/v1/maintenance/requests/{id}
-□ Implement PUT /api/v1/maintenance/requests/{id}
-□ Implement DELETE /api/v1/maintenance/requests/{id}
-□ Add Pydantic schemas for validation
-□ Add pagination
-□ Write API tests
-
-Deliverables:
-- Maintenance request CRUD API
-- api/routes/maintenance.py
-- api/schemas/maintenance.py
-- API tests
-
-Team: Backend Developer
-Time: 8-12 hours
-```
-
-**Block API (Basic)**
-```python
-Tasks:
-□ Implement GET /api/v1/blocks (list)
-□ Implement GET /api/v1/blocks/{id}
-□ Implement POST /api/v1/blocks/{id}/approve
-□ Add Pydantic schemas
-□ Write API tests
-
-Deliverables:
-- Basic block API
-- api/routes/blocks.py
-- api/schemas/blocks.py
-
-Team: Backend Developer
-Time: 4-6 hours
-```
-
-#### Day 4-10: Basic Optimization Engine
-
-**Priority Scoring (Rule-Based for Phase 1)**
-```python
-Tasks:
-□ Create PriorityScorer class
-□ Implement rule-based scoring algorithm:
-  - Asset criticality (30%)
-  - Safety risk (25%)
-  - Overdue factor (20%)
-  - Severity (15%)
-  - Impact (10%)
-□ Calculate scores for maintenance requests
-□ Write unit tests
-□ Integrate with maintenance request creation
-
-Deliverables:
-- PriorityScorer class
-- ml/priority_scorer.py
-- Tests
-
-Team: Backend Lead / Algorithm Developer
-Time: 8-12 hours
-```
-
-**Basic Block Scheduler (Greedy Algorithm)**
-```python
-Tasks:
-□ Create BlockScheduler class
-□ Implement greedy scheduling algorithm:
-  - Sort requests by priority
-  - Try to schedule each request
-  - Check for conflicts (time, section)
-  - Create blocks
-□ Implement simple block grouping:
-  - Detect overlapping maintenance on same section
-  - Combine into single block if safe
-□ Calculate basic metrics:
-  - Number of blocks created
-  - Scheduling rate
-  - Time saved
-□ Write comprehensive tests
-
-Deliverables:
-- BlockScheduler class (greedy version)
-- optimization/block_scheduler_greedy.py
-- Tests
-- Working but simple optimization
-
-Team: Algorithm Developer + Backend Lead
-Time: 16-20 hours
-```
-
-**Optimization API**
-```python
-Tasks:
-□ Implement POST /api/v1/optimize/run
-□ Create optimization request schema
-□ Integrate Data Agent (fetch requests)
-□ Integrate BlockScheduler
-□ Save optimization results
-□ Return blocks + metrics
-□ Add async task support (Celery) - optional
-□ Write API tests
-
-Deliverables:
-- Optimization API endpoint
-- api/routes/optimization.py
-- Integration tests
-
-Team: Backend Developer
-Time: 8-12 hours
-```
-
-### Sprint 1 Deliverables Summary
-
-**Backend:**
-✓ Complete database schema and migrations  
-✓ All data models and repositories  
-✓ Synthetic data generators  
-✓ Authentication system  
-✓ Maintenance request CRUD API  
-✓ Block API (basic)  
-✓ Rule-based priority scoring  
-✓ Greedy optimization algorithm  
-✓ Optimization API endpoint  
-
-**Infrastructure:**
-✓ Docker Compose environment  
-✓ All services running (Postgres, Redis, pgAdmin)  
-✓ Development setup documented  
-
-**Testing:**
-✓ Unit tests for models  
-✓ Unit tests for repositories  
-✓ API tests for all endpoints  
-✓ Test coverage > 60%  
+### Phase 1 Objectives
+* Establish development environment (Docker Compose, PostgreSQL with PostGIS, Redis).
+* Model real Indian Railways corridor: **New Delhi (NDLS) – Ghaziabad (GZB) – Kanpur Central (CNB)**.
+* Generate authentic synthetic maintenance requests from TMS (Track), SMMS (Signal), and TDMS (Traction).
+* Build the core **OR-Tools CP-SAT Block Bundling Optimizer** enforcing directional track isolation.
+* Deliver the **Divisional Control Cockpit MVP** (Leaflet Map + Canvas Gantt Timeline + 1-Click Optimize).
 
 ---
 
-## Sprint 2: Basic UI & Integration (Weeks 3-4)
+## Sprint 1: Infrastructure, Spatial Data & Models (Weeks 1–2)
 
-### Week 3: Frontend Foundation
+### Week 1: Environment Setup & Database Modeling
 
-#### Day 1-3: Authentication & Layout
+#### Day 1–2: Project Scaffolding & Container Infrastructure
+* **Tasks**:
+  1. Initialize clean monorepo: `backend/`, `frontend/`, `infrastructure/`, `scripts/`.
+  2. Setup `docker-compose.yml` with:
+     - PostgreSQL 15 with PostGIS extension.
+     - Redis 7.0 for state management and locks.
+     - FastAPI backend with auto-reload.
+     - Vite + React frontend server.
+  3. Verify containers boot cleanly and test cross-service networking.
+* **Deliverables**: Working Docker Compose stack, repository environment documentation.
 
-**Authentication Flow**
-```typescript
-Tasks:
-□ Create login page
-□ Implement login form (React Hook Form + Zod)
-□ Create auth slice (Redux)
-□ Implement token storage (localStorage)
-□ Create ProtectedRoute component
-□ Create AuthProvider context
-□ Implement auto-logout on token expiry
-□ Add loading states
-
-Deliverables:
-- Working login/logout
-- src/pages/LoginPage.tsx
-- src/store/slices/authSlice.ts
-- src/components/auth/
-
-Team: Frontend Developer
-Time: 8-12 hours
-```
-
-**Dashboard Layout**
-```typescript
-Tasks:
-□ Create main layout component
-□ Implement sidebar navigation
-□ Create header with user info
-□ Implement responsive design
-□ Create route structure:
-  - /dashboard/overview
-  - /dashboard/maintenance-requests
-  - /dashboard/block-planning
-  - /dashboard/analytics
-□ Add MUI theme customization
-□ Create common components (Button, Card, etc.)
-
-Deliverables:
-- Dashboard layout
-- src/components/layout/DashboardLayout.tsx
-- src/components/layout/Sidebar.tsx
-- Responsive design working
-
-Team: Frontend Developer + UI/UX
-Time: 12-16 hours
-```
-
-#### Day 4-7: Maintenance Request Management
-
-**Maintenance Request List**
-```typescript
-Tasks:
-□ Create maintenance request list page
-□ Implement data fetching (RTK Query)
-□ Create table component with:
-  - Sorting
-  - Filtering (status, department, section)
-  - Pagination
-□ Add status badges
-□ Add priority score display
-□ Implement search functionality
-□ Add loading and error states
-
-Deliverables:
-- Maintenance request list page
-- src/pages/MaintenanceRequestsPage.tsx
-- src/components/maintenance/RequestListTable.tsx
-- src/services/api/maintenanceApi.ts
-
-Team: Frontend Developer
-Time: 12-16 hours
-```
-
-**Create/Edit Maintenance Request**
-```typescript
-Tasks:
-□ Create request form component
-□ Implement form fields:
-  - Department (select)
-  - Section (select)
-  - Asset type (select)
-  - Defect type (text)
-  - Severity (select)
-  - Description (textarea)
-  - Estimated duration (number)
-  - Due date (date picker)
-□ Add form validation (Zod schema)
-□ Implement create API call
-□ Add success/error notifications
-□ Create modal/drawer for form
-
-Deliverables:
-- Request form component
-- src/components/maintenance/RequestForm.tsx
-- Form validation working
-- Create/edit functionality
-
-Team: Frontend Developer
-Time: 8-12 hours
-```
-
-#### Day 8-10: Block Planning View (Basic)
-
-**Block List View**
-```typescript
-Tasks:
-□ Create block planning page
-□ Implement block list/table
-□ Display block details:
-  - Block ID
-  - Section
-  - Time range
-  - Duration
-  - Departments
-  - Status
-  - Maintenance tasks count
-□ Add filter by date range
-□ Add filter by section
-□ Add filter by status
-□ Implement approve/reject actions
-
-Deliverables:
-- Block planning page
-- src/pages/BlockPlanningPage.tsx
-- src/components/blocks/BlockListTable.tsx
-
-Team: Frontend Developer
-Time: 8-12 hours
-```
-
-**Simple Timeline View**
-```typescript
-Tasks:
-□ Create timeline component
-□ Display blocks on horizontal timeline
-□ Show time axis (hours)
-□ Color-code by department
-□ Show block duration
-□ Add tooltips with details
-□ Implement date navigation
-
-Deliverables:
-- Basic timeline visualization
-- src/components/blocks/BlockTimeline.tsx
-- Working timeline view
-
-Team: Frontend Developer
-Time: 8-12 hours
-```
-
-### Week 4: Optimization UI & Integration
-
-#### Day 1-4: Optimization Dashboard
-
-**Optimization Form**
-```typescript
-Tasks:
-□ Create optimization form component
-□ Implement form fields:
-  - Date range picker
-  - Section filter (multi-select)
-  - Department filter (multi-select)
-  - Min priority threshold
-  - Max optimization time
-□ Add form validation
-□ Implement optimize API call
-□ Add loading state during optimization
-□ Handle optimization results
-
-Deliverables:
-- Optimization form
-- src/components/optimization/OptimizationForm.tsx
-- Working optimization trigger
-
-Team: Frontend Developer
-Time: 8-12 hours
-```
-
-**Optimization Results Display**
-```typescript
-Tasks:
-□ Create results component
-□ Display metrics:
-  - Total requests
-  - Scheduled requests
-  - Total blocks created
-  - Combined blocks
-  - Time saved
-  - Asset availability improvement
-□ Create before/after comparison
-□ Display optimized blocks
-□ Add visualization (simple charts)
-□ Add export results button
-
-Deliverables:
-- Results display component
-- src/components/optimization/OptimizationResults.tsx
-- Metrics dashboard
-- Before/after visualization
-
-Team: Frontend Developer
-Time: 12-16 hours
-```
-
-#### Day 5-7: Railway Corridor Map (Basic)
-
-**Map Integration**
-```typescript
-Tasks:
-□ Install and set up React-Leaflet
-□ Create map component
-□ Display base map (OpenStreetMap)
-□ Add railway sections as polylines
-□ Add markers for stations
-□ Implement zoom controls
-□ Add section tooltips
-□ Style railway corridors
-
-Deliverables:
-- Basic map component
-- src/components/map/CorridorMap.tsx
-- Railway sections displayed
-- Interactive map
-
-Team: Frontend Developer
-Time: 12-16 hours
-```
-
-**Block Visualization on Map**
-```typescript
-Tasks:
-□ Display blocks on map
-□ Add block markers on sections
-□ Color-code by status
-□ Show combined blocks differently
-□ Implement click to view details
-□ Add legend
-□ Sync with timeline view
-
-Deliverables:
-- Blocks displayed on map
-- Interactive block markers
-- Map + timeline integration
-
-Team: Frontend Developer
-Time: 8-12 hours
-```
-
-#### Day 8-10: Integration & Testing
-
-**End-to-End Integration**
-```typescript
-Tasks:
-□ Test complete workflow:
-  1. Login
-  2. View maintenance requests
-  3. Create new request
-  4. Run optimization
-  5. View results
-  6. View blocks on map
-  7. Approve block
-□ Fix integration issues
-□ Add loading states everywhere
-□ Add error handling
-□ Add notifications for actions
-□ Test on different screen sizes
-□ Cross-browser testing
-
-Deliverables:
-- Working end-to-end flow
-- All integration issues resolved
-- Error handling complete
-- Responsive design verified
-
-Team: Full Team
-Time: 12-16 hours
-```
-
-**Demo Preparation**
-```bash
-Tasks:
-□ Create demo data script
-□ Prepare demo scenario:
-  - 20-30 maintenance requests
-  - Multiple departments
-  - Multiple sections
-  - Sample train schedules
-□ Document demo flow
-□ Practice demo
-□ Record demo video (backup)
-□ Create demo slides (optional)
-
-Deliverables:
-- Demo-ready system
-- Demo data script
-- Demo documentation
-- Demo video
-
-Team: Full Team
-Time: 8-12 hours
-```
-
-### Sprint 2 Deliverables Summary
-
-**Frontend:**
-✓ Complete authentication flow  
-✓ Dashboard layout with navigation  
-✓ Maintenance request management (CRUD)  
-✓ Block planning views (list + timeline)  
-✓ Optimization dashboard  
-✓ Railway corridor map  
-✓ Results visualization  
-
-**Integration:**
-✓ Frontend-Backend integration complete  
-✓ API calls working  
-✓ Error handling  
-✓ Loading states  
-
-**Demo:**
-✓ End-to-end demo ready  
-✓ Demo data prepared  
-✓ Demo flow documented  
+#### Day 3–5: Hierarchical Database Schema & SQLAlchemy Models
+* **Tasks**:
+  1. Create database migrations using Alembic for tables:
+     - `operational_jurisdictions` (Board, Zone, Division, Section).
+     - `stations` & `sections` (with PostGIS `LineString` for track geometry).
+     - `maintenance_machinery` (Track Tampers, Tower Wagons, Ballast Cleaners).
+     - `maintenance_requests` (TMS, SMMS, TDMS tickets).
+     - `train_schedules` (Vande Bharat, Rajdhani, Express, Freight routes).
+     - `maintenance_blocks` & `block_request_assignments`.
+  2. Implement SQLAlchemy 2.0 ORM models with relationship mappings and indexing.
+  3. Verify migration rollbacks and schema integrity.
+* **Deliverables**: Complete relational schema, Alembic migration scripts, SQLAlchemy repository layer.
 
 ---
 
-# Phase 1 Review & Milestone
+### Week 2: Realistic Corridor Data Engine & Baseline Scheduling
 
-### Phase 1 Completion Checklist
+#### Day 6–8: Authentic Indian Railways Corridor & Synthetic Data Engine
+* **Tasks**:
+  1. Implement `scripts/generate_corridor_data.py`:
+     - Physical corridor: NDLS $\rightarrow$ ANVT $\rightarrow$ GZB $\rightarrow$ ALJN $\rightarrow$ TDL $\rightarrow$ ETW $\rightarrow$ CNB.
+     - Directional tracks: Up Main, Down Main, and Station Loop Lines.
+     - Real train schedules based on National Train Enquiry System (NTES) (e.g., 22436 Vande Bharat, 12424 Rajdhani Express, 12002 Shatabdi, container freight).
+  2. Implement departmental request generators with authentic IR P-Way/S&T defect codes:
+     - **TMS**: Rail wear, corrugation, tamping due, sleeper renewal.
+     - **SMMS**: Point machine sluggishness, track circuit false drop, signal head cleaning.
+     - **TDMS**: OHE contact wire height adjustment, insulator washing, cantilever inspection.
+* **Deliverables**: Synthetic data CLI generator producing 60+ realistic requests across 3 departments.
 
-**Technical:**
-- [ ] All backend APIs working
-- [ ] All frontend pages implemented
-- [ ] Authentication working
-- [ ] Database fully populated with test data
-- [ ] Optimization produces valid results
-- [ ] Map displays railway corridor
-- [ ] End-to-end flow works
-
-**Quality:**
-- [ ] Code reviewed
-- [ ] Tests passing (target: 60% coverage)
-- [ ] No critical bugs
-- [ ] Documentation updated
-- [ ] Setup instructions verified
-
-**Demo:**
-- [ ] Demo scenario prepared
-- [ ] Demo rehearsed
-- [ ] Backup plan (video) ready
-
-### Phase 1 Demo Script
-
-```
-1. Login (5 seconds)
-   - Show authentication
-
-2. Dashboard Overview (30 seconds)
-   - Show pending requests
-   - Show active blocks
-   - Show metrics
-
-3. View Maintenance Requests (30 seconds)
-   - Show list of 25-30 requests
-   - Show different departments (TMS, SMMS, TDMS)
-   - Show priority scores
-   - Filter by department
-
-4. Create New Request (30 seconds)
-   - Create urgent track maintenance
-   - Show priority score calculation
-   - Show it appears in list
-
-5. Run Optimization (2 minutes)
-   - Select date range (1 week)
-   - Select all sections
-   - Click "Optimize"
-   - Show loading state
-   - Show results:
-     * 28 requests → 12 blocks
-     * 5 combined blocks
-     * 4.5 hours saved
-     * 35% asset availability improvement
-
-6. View Results on Map (1 minute)
-   - Show railway corridor
-   - Show blocks on sections
-   - Click on combined block
-   - Show 3 departments coordinated
-
-7. View Block Timeline (30 seconds)
-   - Show Gantt chart
-   - Show before/after comparison
-   - Highlight time savings
-
-8. Approve Block (30 seconds)
-   - Click approve on a block
-   - Show confirmation
-   - Show status change
-
-Total: ~5-6 minutes for Phase 1 demo
-```
+#### Day 9–10: Baseline Greedy Scheduler & Metric Benchmarks
+* **Tasks**:
+  1. Implement a baseline Greedy Scheduler (sorting by priority, sequential non-overlapping slot filling) to serve as benchmark.
+  2. Calculate baseline metrics: separate block downtime, asset unavailability %, train conflict count.
+* **Deliverables**: Functional greedy scheduler producing baseline metrics for comparison against CP-SAT.
 
 ---
 
-# PHASE 2: Advanced Features (Weeks 5-8)
+## Sprint 2: The Optimization Engine & Divisional Cockpit MVP (Weeks 3–4)
 
-## Phase 2 Goals
-✓ OR-Tools CP-SAT optimization  
-✓ ML-based priority scoring  
-✓ Explainability layer  
-✓ What-if simulator  
-✓ Advanced UI/UX  
-✓ Weekly/monthly planning  
+### Week 3: OR-Tools CP-SAT Block Bundling Engine
 
----
+#### Day 11–13: CP-SAT Formulation & Constraint Implementation
+* **Tasks**:
+  1. Formulate problem in Google OR-Tools CP-SAT:
+     - Decision interval variables (`NewOptionalIntervalVar`).
+     - Directional track `AddNoOverlap` constraints per physical section.
+     - Machine capacity `AddCumulative` constraints for Tower Wagons and Track Tampers.
+     - Multi-department co-location bundling incentive in objective function.
+  2. Connect solver with timetable buffer margins (15 min pre/post train pass).
+  3. Validate solver execution under $<30$ seconds limit.
+* **Deliverables**: Production-grade `CPSATBlockOptimizer` in `optimization/cpsat_optimizer.py`.
 
-## Sprint 3: ML & Advanced Optimization (Weeks 5-6)
-
-### Week 5: OR-Tools CP-SAT Implementation
-
-#### Day 1-5: CP-SAT Optimization Engine
-
-**OR-Tools Integration**
-```python
-Tasks:
-□ Install OR-Tools library
-□ Study CP-SAT solver documentation
-□ Design constraint optimization problem:
-  - Decision variables
-  - Constraints
-  - Objectives
-□ Implement BlockSchedulerCPSAT class
-□ Implement time discretization
-□ Implement no-overlap constraints
-□ Implement time window constraints
-□ Implement train conflict constraints
-□ Implement department coordination bonus
-□ Implement multi-objective function
-□ Tune solver parameters
-□ Write comprehensive tests
-□ Benchmark against greedy algorithm
-
-Deliverables:
-- CP-SAT optimization engine
-- optimization/block_scheduler_cpsat.py
-- Solver configuration
-- Performance benchmarks
-- Tests
-
-Team: Algorithm Developer + Backend Lead
-Time: 20-24 hours
-```
-
-**Detailed Implementation Steps:**
-
-```python
-# Step 1: Problem Formulation
-class BlockSchedulerCPSAT:
-    def __init__(self, requests, trains, windows):
-        self.model = cp_model.CpModel()
-        self.requests = requests
-        self.trains = trains
-        self.windows = windows
-        
-    def create_variables(self):
-        # Time slots (15-minute intervals)
-        self.time_slots = self._discretize_time()
-        
-        # Decision variables for each request
-        for req in self.requests:
-            req_id = req['id']
-            max_slots = len(self.time_slots)
-            
-            # Start time variable
-            self.start_vars[req_id] = self.model.NewIntVar(
-                0, max_slots, f'start_{req_id}'
-            )
-            
-            # Assignment variable
-            self.assigned[req_id] = self.model.NewBoolVar(
-                f'assigned_{req_id}'
-            )
-    
-    def add_constraints(self):
-        # No overlap for same section
-        self._add_no_overlap_constraints()
-        
-        # Time window constraints
-        self._add_window_constraints()
-        
-        # Train conflict constraints
-        self._add_train_constraints()
-        
-        # Resource constraints
-        self._add_resource_constraints()
-    
-    def define_objectives(self):
-        # Multi-objective optimization
-        # ... (see architecture.md for details)
-    
-    def solve(self, time_limit=30):
-        solver = cp_model.CpSolver()
-        solver.parameters.max_time_in_seconds = time_limit
-        status = solver.Solve(self.model)
-        
-        if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
-            return self._extract_solution(solver)
-        else:
-            return self._handle_infeasible()
-```
-
-**Block Grouping Algorithm**
-```python
-Tasks:
-□ Implement intelligent block grouping
-□ Detect overlapping maintenance on same section
-□ Check compatibility:
-  - Different departments can combine
-  - Time windows overlap
-  - No safety conflicts
-□ Merge into combined blocks
-□ Calculate combined block duration
-□ Preserve individual task details
-□ Write tests for edge cases
-
-Deliverables:
-- Block grouping algorithm
-- optimization/block_grouper.py
-- Tests
-
-Team: Algorithm Developer
-Time: 8-12 hours
-```
-
-#### Day 6-10: ML-Based Priority Scoring
-
-**Feature Engineering**
-```python
-Tasks:
-□ Design features for priority prediction:
-  - Asset age
-  - Defect severity
-  - Historical failure rate
-  - Maintenance history
-  - Asset criticality score
-  - Safety impact score
-  - Operational impact
-  - Time since last maintenance
-  - Overdue days
-□ Create feature extraction pipeline
-□ Implement feature transformations
-□ Create synthetic training data
-□ Write feature engineering tests
-
-Deliverables:
-- Feature engineering pipeline
-- ml/feature_engineering.py
-- Synthetic training data
-- Feature documentation
-
-Team: Data Scientist / ML Engineer
-Time: 12-16 hours
-```
-
-**XGBoost Model Training**
-```python
-Tasks:
-□ Prepare training dataset:
-  - Generate 1000+ samples
-  - Label with target priority scores
-  - Train/test split
-□ Train XGBoost model
-□ Hyperparameter tuning (GridSearch)
-□ Evaluate model:
-  - MAE, RMSE
-  - Feature importance
-□ Compare with rule-based baseline
-□ Save trained model
-□ Create model registry
-□ Write prediction API
-□ Write model tests
-
-Deliverables:
-- Trained XGBoost model
-- ml/priority_model.py
-- Model artifacts (saved model file)
-- Model evaluation report
-- Prediction API
-
-Team: ML Engineer
-Time: 12-16 hours
-```
-
-**SHAP Explainability**
-```python
-Tasks:
-□ Install SHAP library
-□ Implement SHAP explainer for XGBoost
-□ Calculate SHAP values for predictions
-□ Create explanation generator
-□ Visualize feature contributions
-□ Integrate with priority API
-□ Add to explanation response
-
-Deliverables:
-- SHAP integration
-- ml/explainability.py
-- SHAP visualizations
-- API integration
-
-Team: ML Engineer
-Time: 8-12 hours
-```
-
-### Week 6: Explainability & Weekly Planning
-
-#### Day 1-5: Explainability Agent
-
-**Explanation Engine**
-```python
-Tasks:
-□ Create ExplainabilityAgent class
-□ Implement block explanation generator:
-  - Why this block was created
-  - Why these tasks combined
-  - Why this time window
-  - Why not alternatives
-□ Implement factor analyzer:
-  - Priority impact
-  - Coordination benefit
-  - Train impact
-  - Time window fit
-  - Asset availability gain
-□ Implement natural language generator
-□ Create explanation templates
-□ Calculate confidence scores
-□ Generate alternative scenarios
-□ Write comprehensive tests
-
-Deliverables:
-- ExplainabilityAgent class
-- agents/explainability_agent.py
-- Explanation templates
-- Tests
-
-Team: Backend Developer + ML Engineer
-Time: 16-20 hours
-```
-
-**Explanation API**
-```python
-Tasks:
-□ Implement GET /api/v1/explain/block/{block_id}
-□ Implement GET /api/v1/explain/optimization/{opt_id}
-□ Implement GET /api/v1/explain/priority/{req_id}
-□ Return structured explanations
-□ Include SHAP values for ML predictions
-□ Add visualization data
-□ Write API tests
-
-Deliverables:
-- Explanation API endpoints
-- api/routes/explanations.py
-- API documentation
-- Tests
-
-Team: Backend Developer
-Time: 8-12 hours
-```
-
-#### Day 6-10: Weekly & Monthly Planning
-
-**Weekly Planner**
-```python
-Tasks:
-□ Implement weekly optimization mode
-□ Handle multi-day scheduling
-□ Balance workload across days
-□ Consider weekly patterns
-□ Generate weekly calendar view
-□ Calculate weekly metrics
-□ Write tests
-
-Deliverables:
-- Weekly planner
-- optimization/weekly_planner.py
-- POST /api/v1/optimize/weekly-plan endpoint
-- Tests
-
-Team: Algorithm Developer
-Time: 12-16 hours
-```
-
-**Monthly Planner**
-```python
-Tasks:
-□ Implement monthly strategic planning
-□ Group maintenance by priority tiers
-□ Schedule critical tasks first
-□ Distribute routine maintenance
-□ Consider seasonal patterns
-□ Generate monthly calendar
-□ Calculate monthly metrics
-□ Write tests
-
-Deliverables:
-- Monthly planner
-- optimization/monthly_planner.py
-- POST /api/v1/optimize/monthly-plan endpoint
-- Tests
-
-Team: Algorithm Developer
-Time: 12-16 hours
-```
-
-### Sprint 3 Deliverables Summary
-
-**Backend:**
-✓ CP-SAT optimization engine  
-✓ ML-based priority scoring  
-✓ SHAP explainability  
-✓ Explainability agent  
-✓ Explanation API  
-✓ Weekly planner  
-✓ Monthly planner  
-
-**Performance:**
-✓ Optimization time < 30s for 100 requests  
-✓ ML model accuracy > 85%  
-✓ Explanations generated < 1s  
+#### Day 14–15: FastAPI Tactical Endpoints
+* **Tasks**:
+  1. Implement REST endpoints:
+     - `GET /api/v1/corridor/sections`: Returns station coordinates and track paths.
+     - `GET /api/v1/maintenance/requests`: Filterable by division, department, and status.
+     - `POST /api/v1/optimize/run`: Triggers CP-SAT optimization and returns scheduled blocks + metrics.
+     - `GET /api/v1/blocks`: Returns scheduled blocks and assigned tasks.
+* **Deliverables**: Functional API endpoints verified with automated Swagger/pytest tests.
 
 ---
 
-## Sprint 4: Advanced UI & Simulation (Weeks 7-8)
+### Week 4: Divisional Control Cockpit MVP & Phase 1 Demo
 
-### Week 7: Advanced UI Components
+#### Day 16–18: React + Leaflet Corridor Canvas & Gantt View
+* **Tasks**:
+  1. Build `DivisionalControlCockpit.tsx`:
+     - **Leaflet Map**: Renders Up and Down tracks between Delhi and Kanpur with station markers.
+     - **Gantt Chart**: 24-hour timeline displaying train paths and maintenance block slots.
+     - **Department Legend**: Color-coded badges (Green: TMS, Yellow: SMMS, Blue: TDMS, Orange: Combined Super-Block).
+  2. Connect UI with `/api/v1/optimize/run`.
+* **Deliverables**: Interactive web dashboard displaying live optimization results on map and timeline.
 
-#### Day 1-3: Explanation Display
-
-**Explanation Panel**
-```typescript
-Tasks:
-□ Create explanation panel component
-□ Display explanation summary
-□ Display detailed factors with weights
-□ Create factor visualization (chart)
-□ Display alternatives considered
-□ Show confidence score
-□ Add SHAP value visualization
-□ Implement collapsible sections
-□ Add tooltip explanations
-
-Deliverables:
-- Explanation panel component
-- src/components/explanations/ExplanationPanel.tsx
-- Factor visualization
-- SHAP visualization
-
-Team: Frontend Developer
-Time: 12-16 hours
-```
-
-**Priority Explanation**
-```typescript
-Tasks:
-□ Create priority explanation component
-□ Show priority score breakdown
-□ Display SHAP feature contributions
-□ Create waterfall chart for SHAP
-□ Show feature values
-□ Add comparison with similar requests
-
-Deliverables:
-- Priority explanation component
-- src/components/maintenance/PriorityExplanation.tsx
-- SHAP waterfall chart
-
-Team: Frontend Developer
-Time: 8-12 hours
-```
-
-#### Day 4-7: Advanced Visualizations
-
-**Enhanced Gantt Chart**
-```typescript
-Tasks:
-□ Implement professional Gantt chart
-□ Show blocks on timeline
-□ Color-code by department
-□ Show combined blocks distinctly
-□ Add zoom controls
-□ Add date navigation
-□ Show trains on timeline (optional)
-□ Add drag-and-drop (Phase 3)
-□ Add tooltips with details
-□ Export as image
-
-Deliverables:
-- Advanced Gantt chart
-- src/components/blocks/AdvancedGanttChart.tsx
-- Zoom and navigation
-- Export functionality
-
-Team: Frontend Developer + UI/UX
-Time: 16-20 hours
-```
-
-**Metrics Dashboard**
-```typescript
-Tasks:
-□ Create comprehensive metrics dashboard
-□ Display key metrics:
-  - Asset availability (gauge chart)
-  - Time saved (comparison chart)
-  - Scheduling rate (progress bar)
-  - Train impact (bar chart)
-  - Department utilization (pie chart)
-  - Trend over time (line chart)
-□ Add date range selector
-□ Add filters
-□ Implement real-time updates
-□ Add export to PDF
-
-Deliverables:
-- Metrics dashboard
-- src/pages/AnalyticsPage.tsx
-- Multiple chart types
-- Export functionality
-
-Team: Frontend Developer
-Time: 12-16 hours
-```
-
-#### Day 8-10: Weekly/Monthly Views
-
-**Calendar View**
-```typescript
-Tasks:
-□ Create calendar component
-□ Display weekly view
-□ Display monthly view
-□ Show blocks on calendar
-□ Color-code by status
-□ Add hover details
-□ Implement date navigation
-□ Add legend
-□ Show summary per day
-
-Deliverables:
-- Calendar view component
-- src/components/blocks/CalendarView.tsx
-- Weekly and monthly modes
-- Interactive calendar
-
-Team: Frontend Developer
-Time: 12-16 hours
-```
-
-### Week 8: What-If Simulator
-
-#### Day 1-5: Simulation Backend
-
-**Simulation Agent**
-```python
-Tasks:
-□ Create SimulationAgent class
-□ Implement scenario manager:
-  - Create scenario
-  - Modify parameters
-  - Version scenarios
-□ Implement simulation engine:
-  - Clone base optimization
-  - Apply modifications
-  - Run optimization
-  - Collect results
-□ Implement comparison analyzer:
-  - Compare metrics
-  - Calculate differences
-  - Identify impacts
-□ Implement parallel simulation:
-  - Run multiple scenarios
-  - Aggregate results
-□ Write comprehensive tests
-
-Deliverables:
-- SimulationAgent class
-- agents/simulation_agent.py
-- Tests
-
-Team: Backend Developer + Algorithm Developer
-Time: 16-20 hours
-```
-
-**Simulation API**
-```python
-Tasks:
-□ Implement POST /api/v1/simulation/create
-□ Implement POST /api/v1/simulation/{id}/run
-□ Implement GET /api/v1/simulation/{id}/results
-□ Implement POST /api/v1/simulation/compare
-□ Add async task support (if not already)
-□ Return comparison metrics
-□ Write API tests
-
-Deliverables:
-- Simulation API endpoints
-- api/routes/simulation.py
-- Async execution support
-- Tests
-
-Team: Backend Developer
-Time: 8-12 hours
-```
-
-#### Day 6-10: Simulation UI
-
-**Scenario Builder**
-```typescript
-Tasks:
-□ Create scenario builder page
-□ Implement base scenario selector
-□ Add modification controls:
-  - Add maintenance request
-  - Remove maintenance request
-  - Modify train schedule
-  - Change time windows
-  - Adjust priorities
-□ Show impact preview
-□ Save scenario
-□ Run simulation button
-
-Deliverables:
-- Scenario builder component
-- src/pages/WhatIfSimulatorPage.tsx
-- src/components/simulation/ScenarioBuilder.tsx
-- Modification controls
-
-Team: Frontend Developer
-Time: 12-16 hours
-```
-
-**Comparison View**
-```typescript
-Tasks:
-□ Create comparison component
-□ Display side-by-side comparison:
-  - Base vs. scenario
-  - Metrics comparison
-  - Block differences
-  - Impact analysis
-□ Highlight differences
-□ Add visual comparison (charts)
-□ Show insights and recommendations
-□ Export comparison report
-
-Deliverables:
-- Comparison view component
-- src/components/simulation/ComparisonView.tsx
-- Side-by-side visualization
-- Export functionality
-
-Team: Frontend Developer
-Time: 12-16 hours
-```
-
-**Sensitivity Analysis**
-```typescript
-Tasks:
-□ Create sensitivity analysis component
-□ Allow parameter sweeping:
-  - Train density ±20%
-  - Maintenance duration ±30%
-  - Priority thresholds
-□ Run multiple simulations
-□ Display results:
-  - Parameter impact chart
-  - Sensitivity heatmap
-  - Optimal parameter ranges
-□ Generate insights
-
-Deliverables:
-- Sensitivity analysis component
-- src/components/simulation/SensitivityAnalysis.tsx
-- Parameter sweeping
-- Results visualization
-
-Team: Frontend Developer
-Time: 8-12 hours
-```
-
-### Sprint 4 Deliverables Summary
-
-**Backend:**
-✓ Simulation agent  
-✓ Simulation API  
-✓ Async execution  
-✓ Comparison engine  
-
-**Frontend:**
-✓ Explanation panels  
-✓ Advanced Gantt chart  
-✓ Metrics dashboard  
-✓ Calendar view  
-✓ What-if simulator  
-✓ Scenario builder  
-✓ Comparison view  
-✓ Sensitivity analysis  
-
-**Features:**
-✓ Complete explainability  
-✓ Full simulation capability  
-✓ Advanced visualizations  
+#### Day 19–20: Phase 1 Integration & Milestone Demo
+* **Tasks**:
+  1. Perform end-to-end user journey:
+     - Load 35 uncoordinated requests from 3 departments (representing 32 hours of separate blocks).
+     - Click **"Optimize Division Schedule"**.
+     - CP-SAT solves in $<10$ seconds.
+     - Dashboard renders **12 Combined Blocks totaling 15.5 hours** (+51% availability improvement).
+  2. Record backup demo video and draft Phase 1 milestone report.
+* **Phase 1 Milestone Deliverable**: Fully working prototype demonstrating multi-department bundling.
 
 ---
 
-# Phase 2 Review & Milestone
+# PHASE 2: Enterprise Hierarchy, Intelligence & Live Safety Handshake (Weeks 5–8)
 
-### Phase 2 Demo Script
-
-```
-1. Login & Overview (30 seconds)
-   - Show dashboard with metrics
-
-2. Advanced Optimization (2 minutes)
-   - Show 50+ maintenance requests
-   - Select weekly planning
-   - Run CP-SAT optimization
-   - Show results:
-     * 53 requests → 18 blocks
-     * 8 combined blocks
-     * 7.2 hours saved
-     * 42% improvement
-     * Solver time: 12 seconds
-
-3. Explainability (2 minutes)
-   - Click on combined block
-   - Show explanation panel:
-     * Why combined (3 depts)
-     * Priority factors
-     * Train impact analysis
-     * Time window rationale
-   - Show confidence: 91%
-   - Show alternatives rejected
-   - Show SHAP values for priority
-
-4. Advanced Visualizations (1 minute)
-   - Show Gantt chart with zoom
-   - Show weekly calendar
-   - Show metrics dashboard:
-     * Asset availability gauge
-     * Time savings trend
-     * Department utilization
-
-5. What-If Simulation (3 minutes)
-   - Create scenario: "Emergency maintenance"
-   - Add urgent track repair
-   - Run simulation
-   - Show comparison:
-     * Base: 18 blocks
-     * Scenario: 20 blocks
-     * Impact: +2 train delays
-     * Recommendation: Schedule at night
-   - Show sensitivity analysis:
-     * Train density impact
-     * Optimal scheduling window
-
-6. Weekly/Monthly Planning (1 minute)
-   - Switch to monthly view
-   - Show strategic distribution
-   - Show weekly patterns
-   - Highlight balanced workload
-
-Total: ~9-10 minutes for Phase 2 demo
-```
+### Phase 2 Objectives
+* Expand the platform into all **4 Operational Tiers** (`/field`, `/division`, `/zone`, `/board`).
+* Implement the legal Indian Railways safety workflow: **Digital Disconnection Memo, Traction PTW, Track Fit, Caution Orders (TSR)**.
+* Build the **XGBoost ML Priority Scorer** with SHAP explainability.
+* Integrate the **Gemini LLM Operational Reasoner** to auto-generate official Railway Dispatch Justifications.
+* Deliver the **Interactive What-If Simulator** (Emergency Rail Fracture injection and train delay replanning).
 
 ---
 
-# PHASE 3: Production Ready & Deployment (Weeks 9-12)
+## Sprint 3: 4-Tier Portals & The Digital Safety Memo Handshake (Weeks 5–6)
 
-## Phase 3 Goals
-✓ Production-grade code  
-✓ Comprehensive testing  
-✓ Performance optimization  
-✓ Deployment infrastructure  
-✓ Complete documentation  
-✓ Demo polish  
-✓ Presentation ready  
+### Week 5: Multi-Tier Role-Based Portals
 
----
+#### Day 21–23: Multi-Tier Authentication & RBAC Router
+* **Tasks**:
+  1. Implement JWT auth with claims: `tier_role`, `department`, `jurisdiction_id`.
+  2. Build React role-based routing protecting:
+     - `/field`: Field Senior Section Engineers & Station Masters.
+     - `/division`: Divisional Operations Controllers.
+     - `/zone`: Zonal Headquarters Executive.
+     - `/board`: Railway Board National Cockpit.
+* **Deliverables**: Secure multi-tenancy and dynamic portal navigation based on authenticated role.
 
-## Sprint 5: Testing & Performance (Weeks 9-10)
-
-### Week 9: Comprehensive Testing
-
-#### Day 1-3: Unit Testing
-
-**Backend Unit Tests**
-```python
-Tasks:
-□ Achieve 85%+ unit test coverage
-□ Test all models
-□ Test all repositories
-□ Test all agents
-□ Test optimization algorithms
-□ Test ML models
-□ Test utility functions
-□ Fix failing tests
-□ Add edge case tests
-
-Deliverables:
-- 85%+ test coverage
-- All tests passing
-- Coverage report
-
-Team: Full Backend Team
-Time: 16-20 hours
-```
-
-**Frontend Unit Tests**
-```typescript
-Tasks:
-□ Achieve 70%+ unit test coverage
-□ Test all components
-□ Test Redux slices
-□ Test utility functions
-□ Test hooks
-□ Fix failing tests
-□ Add snapshot tests
-
-Deliverables:
-- 70%+ test coverage
-- All tests passing
-- Coverage report
-
-Team: Full Frontend Team
-Time: 12-16 hours
-```
-
-#### Day 4-6: Integration Testing
-
-**API Integration Tests**
-```python
-Tasks:
-□ Test all API endpoints end-to-end
-□ Test authentication flow
-□ Test CRUD operations
-□ Test optimization workflow
-□ Test simulation workflow
-□ Test error scenarios
-□ Test concurrent requests
-□ Fix integration issues
-
-Deliverables:
-- Comprehensive integration tests
-- tests/integration/
-- All tests passing
-
-Team: Backend Team
-Time: 12-16 hours
-```
-
-**Frontend Integration Tests**
-```typescript
-Tasks:
-□ Test complete user workflows
-□ Test authentication flow
-□ Test maintenance request flow
-□ Test optimization flow
-□ Test simulation flow
-□ Test error handling
-□ Test loading states
-
-Deliverables:
-- E2E integration tests
-- Workflow tests passing
-
-Team: Frontend Team
-Time: 12-16 hours
-```
-
-#### Day 7-10: Performance Testing
-
-**Backend Performance**
-```python
-Tasks:
-□ Benchmark optimization performance:
-  - 10 requests: target < 5s
-  - 50 requests: target < 15s
-  - 100 requests: target < 30s
-□ Benchmark API response times:
-  - GET requests: < 100ms
-  - POST requests: < 200ms
-□ Database query optimization
-□ Add indexes if needed
-□ Profile slow operations
-□ Optimize algorithms
-□ Add caching where needed
-□ Load testing (concurrent users)
-
-Deliverables:
-- Performance benchmarks
-- Optimization report
-- Performance targets met
-
-Team: Backend Lead + DevOps
-Time: 16-20 hours
-```
-
-**Frontend Performance**
-```typescript
-Tasks:
-□ Lighthouse audit (target: 90+)
-□ Optimize bundle size:
-  - Code splitting
-  - Lazy loading
-  - Tree shaking
-□ Optimize rendering:
-  - Memoization
-  - Virtual scrolling for large lists
-  - Debouncing/throttling
-□ Optimize images and assets
-□ Test on slow networks
-□ Test on mobile devices
-
-Deliverables:
-- Lighthouse score 90+
-- Performance report
-- Optimizations applied
-
-Team: Frontend Lead
-Time: 12-16 hours
-```
-
-### Week 10: Polish & Bug Fixes
-
-#### Day 1-5: Bug Fixes & Edge Cases
-
-**Bug Bash**
-```bash
-Tasks:
-□ Full system testing by all team members
-□ Log all bugs in issue tracker
-□ Prioritize bugs (critical, high, medium, low)
-□ Fix all critical bugs
-□ Fix all high priority bugs
-□ Fix as many medium bugs as possible
-□ Test fixes
-□ Regression testing
-
-Deliverables:
-- Bug-free system (no critical/high bugs)
-- Bug fix documentation
-
-Team: Full Team
-Time: 20-24 hours
-```
-
-**Edge Case Handling**
-```bash
-Tasks:
-□ Test with no data
-□ Test with maximum data
-□ Test with invalid inputs
-□ Test with network failures
-□ Test with slow responses
-□ Test with token expiry
-□ Test concurrent operations
-□ Add proper error messages
-□ Add loading states
-□ Add empty states
-
-Deliverables:
-- Robust error handling
-- All edge cases handled
-
-Team: Full Team
-Time: 12-16 hours
-```
-
-#### Day 6-10: UI/UX Polish
-
-**UI Refinement**
-```typescript
-Tasks:
-□ Review all pages with designer
-□ Fix alignment issues
-□ Fix spacing issues
-□ Ensure consistent styling
-□ Add animations/transitions
-□ Add micro-interactions
-□ Improve mobile responsiveness
-□ Add accessibility features:
-  - ARIA labels
-  - Keyboard navigation
-  - Focus management
-  - Screen reader support
-□ Add tooltips where needed
-□ Improve loading indicators
-□ Add success animations
-
-Deliverables:
-- Polished UI
-- Consistent design
-- Accessibility compliant
-
-Team: Frontend Team + UI/UX Designer
-Time: 16-20 hours
-```
+#### Day 24–25: Field Requisition & Station Terminal (`/field`)
+* **Tasks**:
+  1. Mobile-friendly work ticket creation form (KM post, asset code, urgency, machine needs).
+  2. Station Master live block log (shows upcoming sanctions and active track possessions).
+* **Deliverables**: Working Field Portal with real-time ticket dispatch to division.
 
 ---
 
-## Sprint 6: Deployment & Demo (Weeks 11-12)
+### Week 6: The Digital Safety Handshake Lifecycle
 
-### Week 11: Deployment Preparation
+#### Day 26–28: Disconnection Memo, PTW, and Track Fit Workflow
+* **Tasks**:
+  1. Implement the complete digital safety lifecycle in backend and UI:
+     - **Disconnection Memo**: SSE requests formal disconnection; Station Master digitally signs receipt.
+     - **Permit-to-Work (PTW)**: Traction Power Controller (TPC) records OHE feeder isolation number.
+     - **Track Fit Certificate**: SSE signs physical completion handover.
+     - **Caution Order / TSR Generator**: Automatically logs temporary speed restriction (e.g., 30 km/h for 2 hours) to Section Controller's board.
+* **Deliverables**: Regulatory-compliant digital block execution handshake replacing manual paper registers.
 
-#### Day 1-3: Docker & Deployment
-
-**Production Docker Setup**
-```bash
-Tasks:
-□ Create production Dockerfile for backend
-□ Create production Dockerfile for frontend
-□ Optimize Docker images (multi-stage builds)
-□ Create production docker-compose.yml
-□ Add health checks
-□ Add restart policies
-□ Set up environment variables
-□ Test local production deployment
-
-Deliverables:
-- Production Docker images
-- Optimized docker-compose.yml
-- Deployment documentation
-
-Team: DevOps
-Time: 12-16 hours
-```
-
-**Cloud Deployment (AWS)**
-```bash
-Tasks:
-□ Set up AWS account (or chosen cloud)
-□ Set up VPC and security groups
-□ Set up RDS PostgreSQL
-□ Set up ElastiCache Redis
-□ Set up ECS/EKS for containers
-□ Set up Application Load Balancer
-□ Configure SSL/TLS certificates
-□ Set up S3 for static files
-□ Configure CloudWatch logging
-□ Deploy application
-□ Test deployment
-□ Set up CI/CD (GitHub Actions)
-
-Deliverables:
-- Production deployment
-- CI/CD pipeline
-- Deployment URL
-- Monitoring setup
-
-Team: DevOps + Backend Lead
-Time: 20-24 hours
-```
-
-#### Day 4-6: Documentation
-
-**Technical Documentation**
-```markdown
-Tasks:
-□ Complete API documentation (OpenAPI/Swagger)
-□ Write architecture documentation
-□ Write deployment guide
-□ Write developer setup guide
-□ Write database schema documentation
-□ Document all configuration options
-□ Write troubleshooting guide
-□ Add code comments
-□ Generate API docs
-□ Create architecture diagrams
-
-Deliverables:
-- Complete technical documentation
-- docs/ directory
-- README.md updated
-- API documentation published
-
-Team: Full Team
-Time: 16-20 hours
-```
-
-**User Documentation**
-```markdown
-Tasks:
-□ Write user manual
-□ Create user guide for each role:
-  - Planner
-  - Department Head
-  - Admin
-□ Add screenshots
-□ Create video tutorials
-□ Write FAQ
-□ Add troubleshooting for users
-
-Deliverables:
-- User documentation
-- Video tutorials
-- FAQ
-
-Team: Frontend Team + Technical Writer
-Time: 12-16 hours
-```
-
-#### Day 7-10: Demo Preparation
-
-**Demo Data & Scenarios**
-```bash
-Tasks:
-□ Create comprehensive demo dataset:
-  - 50+ maintenance requests
-  - Multiple departments
-  - Multiple sections
-  - Realistic train schedules
-□ Prepare 3-4 demo scenarios:
-  1. Daily optimization
-  2. Weekly planning with emergency
-  3. What-if simulation
-  4. Explainability showcase
-□ Document demo flow
-□ Create demo script
-□ Practice demo multiple times
-□ Record backup video
-□ Test on demo environment
-
-Deliverables:
-- Demo dataset
-- Demo scenarios
-- Demo script
-- Backup video
-- Stable demo environment
-
-Team: Full Team
-Time: 16-20 hours
-```
-
-### Week 12: Final Polish & Presentation
-
-#### Day 1-3: Presentation Materials
-
-**Slide Deck**
-```bash
-Tasks:
-□ Create presentation slides:
-  1. Problem Statement (2 slides)
-  2. Solution Overview (2 slides)
-  3. Architecture (2 slides)
-  4. Key Features (3 slides)
-  5. Demo (1 slide - transition to live demo)
-  6. Technology Stack (1 slide)
-  7. Results & Metrics (2 slides)
-  8. Future Scope (1 slide)
-  9. Team & Timeline (1 slide)
-□ Add visuals and diagrams
-□ Practice presentation
-□ Time presentation (10-15 minutes)
-□ Prepare Q&A answers
-
-Deliverables:
-- Presentation slides
-- Presenter notes
-- Q&A preparation
-
-Team: Project Lead + Full Team
-Time: 12-16 hours
-```
-
-**Demo Video**
-```bash
-Tasks:
-□ Record professional demo video (10 min)
-□ Add voice-over narration
-□ Add captions/subtitles
-□ Add background music (subtle)
-□ Edit and polish
-□ Export in multiple formats
-□ Upload to cloud storage
-□ Create YouTube version (optional)
-
-Deliverables:
-- Professional demo video
-- Multiple formats
-- Backup for live demo
-
-Team: Frontend Lead + Designer
-Time: 8-12 hours
-```
-
-#### Day 4-7: Final Testing & Bug Fixes
-
-**Final System Test**
-```bash
-Tasks:
-□ Complete end-to-end testing
-□ Test on production environment
-□ Test on different browsers
-□ Test on different devices
-□ Load testing
-□ Security testing
-□ Fix any last-minute bugs
-□ Regression testing
-□ Get sign-off from all team members
-
-Deliverables:
-- Fully tested system
-- No critical bugs
-- Production-ready
-
-Team: Full Team
-Time: 16-20 hours
-```
-
-#### Day 8-10: Demo Rehearsal
-
-**Final Demo Rehearsal**
-```bash
-Tasks:
-□ Full demo rehearsal (3-4 times)
-□ Time each section
-□ Practice transitions
-□ Practice explanations
-□ Prepare for questions
-□ Test backup plan
-□ Test equipment (if in-person)
-□ Test internet connection
-□ Prepare contingency plans
-□ Final team meeting
-
-Deliverables:
-- Confident team
-- Smooth demo flow
-- Backup plans ready
-
-Team: Full Team
-Time: 8-12 hours
-```
-
-**Day 10: Demo Day** 🚀
-
-```
-Pre-Demo Checklist:
-□ Production environment stable
-□ Demo data loaded
-□ Backup video ready
-□ Presentation slides ready
-□ All team members ready
-□ Equipment tested
-□ Internet connection tested
-
-Demo Flow (15 minutes total):
-1. Introduction (2 min)
-2. Problem Explanation (2 min)
-3. Live Demo (8 min)
-4. Results & Impact (2 min)
-5. Q&A (time permitting)
-
-Post-Demo:
-□ Gather feedback
-□ Answer judge questions
-□ Network with other teams
-□ Celebrate! 🎉
-```
+#### Day 29–30: Zonal (`/zone`) & Board (`/board`) Executive Dashboards
+* **Tasks**:
+  1. Build `/zone`: Track Machine fleet tracking table (Tampers, BCM, Tower Wagons) across divisions.
+  2. Build `/board`: Pan-India asset availability gauge (+30–40% metric), deferred maintenance risk heatmap, and zonal punctuality loss rankings.
+* **Deliverables**: Functional Tier 1 and Tier 2 executive portals with real-time aggregate KPIs.
 
 ---
 
-## Phase 3 Deliverables Summary
+## Sprint 4: Machine Learning, Explainability & What-If Simulation (Weeks 7–8)
 
-**Quality:**
-✓ 85%+ backend test coverage  
-✓ 70%+ frontend test coverage  
-✓ All tests passing  
-✓ No critical/high bugs  
-✓ Performance targets met  
-✓ Security tested  
+### Week 7: Machine Learning Priority Scoring & LLM Explainer
 
-**Deployment:**
-✓ Production deployment  
-✓ CI/CD pipeline  
-✓ Monitoring setup  
-✓ SSL/TLS configured  
-✓ Backup strategy  
+#### Day 31–33: XGBoost Degradation & Failure Risk Scorer
+* **Tasks**:
+  1. Train XGBoost regressor on asset age, accumulated tonnage (GMT), Track Geometry Index (TGI), and overdue days.
+  2. Connect SHAP TreeExplainer to extract mathematical factor weights per maintenance request.
+  3. Display feature attribution breakdown cards in UI (e.g., *Asset Age: +32%, Overdue Days: +28%*).
+* **Deliverables**: Operational ML priority engine with quantitative factor attribution.
 
-**Documentation:**
-✓ Complete technical docs  
-✓ Complete user docs  
-✓ API documentation  
-✓ Video tutorials  
-✓ FAQ  
-
-**Demo:**
-✓ Polished demo  
-✓ Professional presentation  
-✓ Demo video  
-✓ Backup plans  
-✓ Team confident  
+#### Day 34–35: LLM Operational Reasoning Engine
+* **Tasks**:
+  1. Integrate Gemini API to generate natural language **Railway Dispatch Justification Memos**:
+     - Explains why specific depts were combined.
+     - Analyzes why alternative windows were rejected.
+     - Provides quantitative **Safety Risk vs. Punctuality Loss** statement for Sr. DOM approval.
+* **Deliverables**: Automated, legal-grade operational justification generator.
 
 ---
 
-## Project Completion Checklist
+### Week 8: Interactive What-If Scenario Simulator & Phase 2 Demo
 
-### Technical Completeness
-- [ ] All planned features implemented
-- [ ] All tests passing
-- [ ] Performance targets met
-- [ ] Security requirements met
-- [ ] Documentation complete
-- [ ] Deployment successful
-- [ ] Monitoring operational
+#### Day 36–38: What-If Hot-Restart Replanning Engine
+* **Tasks**:
+  1. Build simulation engine supporting two critical scenarios:
+     - **Scenario A (Emergency Rail Fracture)**: User injects crack at KM 52 $\rightarrow$ Immediate emergency block created $\rightarrow$ Sub-3-second CP-SAT re-solve reroutes trains and pushes routine work back.
+     - **Scenario B (Vande Bharat Running 45 min Late)**: Slider delays train $\rightarrow$ Block automatically shifts to maintain safety margin without train detention.
+  2. Connect Dynamic Train Dispatch Simulator (PS 26028 synergy) to display regulated trains and loop line holding.
+* **Deliverables**: Interactive simulation canvas with instant side-by-side scenario comparison.
 
-### Demo Readiness
-- [ ] Demo data prepared
-- [ ] Demo scenarios tested
-- [ ] Presentation finalized
-- [ ] Demo video created
-- [ ] Backup plans ready
-- [ ] Team rehearsed
-- [ ] Equipment tested
-
-### Quality Assurance
-- [ ] Code reviewed
-- [ ] No critical bugs
-- [ ] User tested
-- [ ] Accessibility checked
-- [ ] Cross-browser tested
-- [ ] Mobile responsive
-- [ ] Error handling robust
-
-### SIH/Competition Readiness
-- [ ] Addresses problem statement completely
-- [ ] Innovation clearly demonstrated
-- [ ] Technical depth visible
-- [ ] Practical deployment shown
-- [ ] Scalability demonstrated
-- [ ] Team coordination excellent
-- [ ] Presentation polished
+#### Day 39–40: Phase 2 Rehearsal & Milestone Presentation
+* **Tasks**:
+  1. Rehearse 10-minute demo showcasing all 4 tiers, the safety memo handshake, and the emergency what-if simulation.
+  2. Record backup video and prepare Phase 2 review deck.
+* **Phase 2 Milestone Deliverable**: Advanced multi-tier enterprise system with live intelligence and simulation.
 
 ---
 
-## Success Metrics
+# PHASE 3: Production Hardening, Zonal Scale & Competition Win (Weeks 9–12)
 
-### Technical Metrics
-- Optimization time: < 30s for 100 requests ✓
-- API response time: < 200ms (p95) ✓
-- ML model accuracy: > 85% ✓
-- Test coverage: > 80% ✓
-- Lighthouse score: > 90 ✓
-
-### Business Metrics
-- Asset availability improvement: 30-40% ✓
-- Block reduction: 40-50% ✓
-- Time saved: 5-8 hours per optimization ✓
-- Scheduling rate: > 90% ✓
-- Combined blocks: 30-40% of total ✓
-
-### Demo Impact Metrics
-- Demo completeness: 100% ✓
-- Presentation quality: Excellent ✓
-- Technical questions answered: 100% ✓
-- Judge engagement: High ✓
-- Team confidence: High ✓
+### Phase 3 Objectives
+* Scale optimization across multiple divisions (**Golden Corridor Synchronization**).
+* Implement cross-zonal Track Machine fleet routing.
+* Achieve $>85\%$ test coverage across unit, integration, and E2E suites.
+* Perform high-concurrency load testing (150+ requests, $<30$ seconds solve).
+* Production containerization, AWS/RailTel cloud deployment, and final pitch readiness.
 
 ---
 
-## Risk Management
+## Sprint 5: Multi-Division Scaling, Fleet Routing & Quality Engineering (Weeks 9–10)
 
-### Technical Risks
-| Risk | Probability | Impact | Mitigation |
-|------|------------|--------|------------|
-| CP-SAT performance issues | Medium | High | Time-boxing, warm starts, fallback to greedy |
-| Data availability | Low | Medium | Synthetic data generators |
-| Frontend complexity | Medium | Medium | Incremental development, code splitting |
-| Deployment issues | Low | High | Docker, extensive testing, backup plan |
+### Week 9: Cross-Division Corridor Synchronization
 
-### Timeline Risks
-| Risk | Probability | Impact | Mitigation |
-|------|------------|--------|------------|
-| Feature creep | High | High | Strict scope management, MVP focus |
-| Team availability | Medium | High | Buffer time, parallel work |
-| Bug fixes taking too long | Medium | Medium | Early testing, bug bash sessions |
-| Demo preparation insufficient | Low | High | Early demo prep, multiple rehearsals |
+#### Day 41–43: Multi-Divisional Golden Corridor Optimization
+* **Tasks**:
+  1. Expand corridor model to cross Delhi Division and Prayagraj Division boundaries.
+  2. Synchronize inter-divisional interchange timings to prevent trains delayed by a block in Delhi from jamming junctions in Prayagraj.
+* **Deliverables**: Multi-divisional block coordinator eliminating inter-divisional train bunching.
+
+#### Day 44–45: Track Machine Organization (TMO) Fleet Routing
+* **Tasks**:
+  1. Implement constraint routing for scarce machines (e.g., routing 1 Ballast Cleaning Machine from Kanpur to Ghaziabad based on highest section priority).
+* **Deliverables**: Automated machine allocation algorithm across divisional boundaries.
 
 ---
 
-## Congratulations! 🎉
+### Week 10: Rigorous Testing & Performance Optimization
 
-You now have a complete, detailed implementation plan for PS 26027. This plan is:
+#### Day 46–48: Automated Testing Suite (>85% Coverage)
+* **Tasks**:
+  1. Unit tests for CP-SAT solver, ML scorer, spatial clusterer, and safety memo state machines.
+  2. Integration tests for all FastAPI endpoints.
+  3. Cypress/Playwright E2E tests for the Divisional Cockpit and Field Portal workflows.
+* **Deliverables**: CI/CD pipeline running automated tests on GitHub Actions with $>85\%$ coverage badge.
 
-✓ **Comprehensive**: Covers all aspects from setup to demo  
-✓ **Realistic**: Based on actual development timelines  
-✓ **Phased**: Clear milestones and deliverables  
-✓ **Flexible**: Can adapt to team size and timeline changes  
-✓ **Production-ready**: Includes testing, deployment, and documentation  
+#### Day 49–50: Stress Testing & Performance Benchmarking
+* **Tasks**:
+  1. Stress-test CP-SAT solver with 150+ maintenance requests over a 7-day planning window.
+  2. Verify solver converges within the 30-second hard limit.
+  3. Optimize PostgreSQL query execution with spatial PostGIS indexing and Redis caching.
+* **Deliverables**: Benchmarking report verifying sub-200ms API response times and $<30$s optimization time.
 
-**Next Steps:**
-1. Review this plan with your team
-2. Assign roles and responsibilities
-3. Set up project management (Jira/Trello)
-4. Start Sprint 1 Day 1
-5. Daily standups and weekly reviews
-6. Stay focused on the demo narrative
-7. Build something amazing! 🚀
+---
+
+## Sprint 6: Cloud Deployment, Documentation & Final Presentation (Weeks 11–12)
+
+### Week 11: Production Deployment & Observability
+
+#### Day 51–53: Production Cloud Deployment (Docker / AWS)
+* **Tasks**:
+  1. Build multi-stage optimized production Dockerfiles for frontend (Nginx) and backend (Uvicorn).
+  2. Deploy to AWS ECS/EC2 or local production-grade Docker Compose environment.
+  3. Configure SSL/TLS, CORS policies, rate limiting, and automated database backups.
+* **Deliverables**: Live, accessible, secure cloud deployment URL.
+
+#### Day 54–55: Comprehensive Documentation & User Manuals
+* **Tasks**:
+  1. Generate interactive OpenAPI / Swagger documentation.
+  2. Write Operator Manuals for:
+     - Section Controllers (`Sr. DOM` & `CPRC`).
+     - Field Engineers (`SSE P-Way`, `SSE Signal`, `SSE OHE`).
+     - Zonal Leadership (`PCOM` & `PCE`).
+* **Deliverables**: Complete documentation suite and printable cheat-sheets.
+
+---
+
+### Week 12: Competition Win & Executive Presentation
+
+#### Day 56–58: Demo Script Refinement & Rehearsals
+* **Tasks**:
+  1. Polish the 15-Minute Winning Pitch Narrative:
+     - **Minute 0–2: The Hook & Indian Railways Problem**: Show 3 departments creating 6 hours of chaos and train delays.
+     - **Minute 2–4: Architecture & 4-Tier Portals**: Walk through Board, Zone, Division, and Field tiers.
+     - **Minute 4–9: Live Divisional Cockpit Demo**:
+       - 60 requests loaded $\rightarrow$ 1-Click Optimize $\rightarrow$ Collapsed into 18 Combined Blocks (+42% availability, 8.5 hours saved).
+       - Click on Combined Block $\rightarrow$ Show SHAP breakdown & LLM Dispatch Justification Brief.
+       - Demonstrate digital safety memo workflow (Disconnection $\rightarrow$ PTW $\rightarrow$ Track Fit $\rightarrow$ TSR).
+     - **Minute 9–12: Interactive What-If Simulation**: Inject emergency broken rail $\rightarrow$ instant replanning in 2.1 seconds.
+     - **Minute 12–14: Quantitative Impact & Production Readiness**: Scalability metrics, cloud deployment, and national savings potential.
+     - **Minute 14–15: Closing**: The path to deployment on Indian Railways.
+  2. Record 4K backup demo video with voiceover in case of venue network failure.
+* **Deliverables**: Master presentation slide deck, 4K demo backup video, rehearsed team.
+
+#### Day 59–60: Final Verification & Presentation Day
+* **Tasks**:
+  1. Full dress rehearsal with mock cross-examination on:
+     - CP-SAT mathematical formulation and convergence guarantees.
+     - Handling real-time RTIS GPS tracking feeds.
+     - Safety fail-safes and human-in-the-loop approval gates.
+  2. Ready to present and win! 🏆
+* **Deliverables**: Flawless, confident presentation delivery.
+
+---
+
+## Deliverable Checkpoint Summary
+
+| Phase | Milestone | Primary Deliverable | Success Criteria |
+|---|---|---|---|
+| **Phase 1** | Week 4 Review | Working Divisional Prototype | CP-SAT bundles 3 departments, saving $\ge 4$ hours on Delhi-Kanpur corridor. |
+| **Phase 2** | Week 8 Review | Multi-Tier Intelligent Platform | 4 Portals live, Safety Memos functional, ML Scorer active, What-If replan in $<3$s. |
+| **Phase 3** | Week 12 Final | Production Enterprise Release | Cloud deployed, $>85\%$ test coverage, $<30$s solve for 150 requests, competition-ready. |
