@@ -48,3 +48,19 @@ dist-ssr/
 # Docker
 postgres_data/
 redis_data/
+
+# Agent Scratchpad, Prompts & Working Documents
+agent.md
+IMPROVE*.md
+improvements*.md
+improvementcodex.md
+phase*decision*.md
+phase*deliverables*.md
+CURRENT-STATE-ASSESSMENT.md
+STATUS-DASHBOARD.md
+PROGRESS-*.md
+DELIVERABLES.md
+NEXT-STEPS.md
+decision.md
+v5*.md
+cron.md
