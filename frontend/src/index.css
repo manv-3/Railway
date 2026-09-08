@@ -1,0 +1,16 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f6f8;
+  color: #263238;
+}
+
+/* Leaflet map container fix */
+.leaflet-container {
+  font-family: 'Roboto', sans-serif;
+}

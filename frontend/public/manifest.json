@@ -1,0 +1,18 @@
+{
+  "short_name": "IR P-Way PWA",
+  "name": "Indian Railways Field Gangmen & Asset Maintenance PWA",
+  "description": "Offline-First Mobile PWA for Indian Railways Track Maintainers, Gangmen, and Keymen",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": "/field",
+  "background_color": "#0d47a1",
+  "theme_color": "#1565c0",
+  "display": "standalone",
+  "orientation": "portrait",
+  "categories": ["productivity", "utilities"]
+}
