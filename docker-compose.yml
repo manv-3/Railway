@@ -55,6 +55,25 @@ services:
     networks:
       - railway-net
 
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: railway_celery_beat
+    restart: unless-stopped
+    command: celery -A tasks.celery_app beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-railway}:${POSTGRES_PASSWORD:-railway123}@postgres:5432/${POSTGRES_DB:-railway_ai}
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-railway_secret_key_super_secure_change_in_production_2026}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - backend
+    networks:
+      - railway-net
+
   frontend:
     build:
       context: ./frontend

@@ -1,0 +1,84 @@
+{
+  "annotations": { "list": [] },
+  "description": "Production monitoring dashboard for PS 26027 - Indian Railways AI Block Planning Platform",
+  "editable": true,
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": { "unit": "s", "thresholds": { "mode": "absolute", "steps": [{"color":"green","value":null},{"color":"yellow","value":10},{"color":"red","value":30}] } }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "targets": [
+        { "expr": "histogram_quantile(0.95, rate(railway_optimizer_solve_time_seconds_bucket[5m]))", "legendFormat": "p95 Solve Time" }
+      ],
+      "title": "CP-SAT Optimizer Solve Time (p95)",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "targets": [
+        { "expr": "railway_blocks_sanctioned_total", "legendFormat": "Total Blocks Sanctioned" }
+      ],
+      "title": "Railway Blocks Sanctioned (Total)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [{"color":"green","value":null},{"color":"yellow","value":50},{"color":"red","value":100}] } } },
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 8 },
+      "id": 3,
+      "targets": [
+        { "expr": "railway_websocket_connected_clients", "legendFormat": "Connected Clients" }
+      ],
+      "title": "WebSocket Connected Clients",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "h" } },
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 8 },
+      "id": 4,
+      "targets": [
+        { "expr": "railway_track_downtime_saved_hours_total", "legendFormat": "Hours Saved" }
+      ],
+      "title": "Track Downtime Hours Saved (Total)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "reqps" } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "id": 5,
+      "targets": [
+        { "expr": "rate(http_requests_total{job=\"railway-backend\"}[1m])", "legendFormat": "{{method}} {{endpoint}}" }
+      ],
+      "title": "API Request Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "ms" } },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "id": 6,
+      "targets": [
+        { "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m])) * 1000", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) * 1000", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) * 1000", "legendFormat": "p99" }
+      ],
+      "title": "API Response Latency Percentiles",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "tags": ["railway", "ai", "ps26027", "production"],
+  "time": { "from": "now-6h", "to": "now" },
+  "timezone": "Asia/Kolkata",
+  "title": "PS 26027 - Railway AI Block Planning Platform",
+  "uid": "railway-ai-prod-v3",
+  "version": 1
+}
