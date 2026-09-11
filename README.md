@@ -107,3 +107,25 @@ The platform provides dedicated, role-tailored administrative portals reflecting
 * **Frontend**: React 18+, TypeScript 5+, Vite, Material-UI (MUI v5), Leaflet / React-Leaflet, Recharts.
 * **Database & Cache**: PostgreSQL 15 with PostGIS, Redis 7.0 In-Memory Store.
 * **DevOps**: Docker, Docker Compose, GitHub Actions, AWS GovCloud / RailTel Cloud ready.
+
+## 💬 Read-Only Operations Copilot
+
+Every authenticated portal includes an **Operations Copilot** for conversational
+questions about the current corridor state. It can read bounded, role-scoped
+snapshots of blocks, maintenance requests, and active trains, then explain the
+result with a UTC freshness timestamp and the tools used.
+
+The copilot has no write tools and does not persist conversation history. It
+cannot sanction a block, run an optimizer, issue a memo or PTW, certify track
+fit, run a simulation, retrain a model, or route machinery. The API contract is:
+
+* `POST /api/v1/copilot/chat` — answer a question from live read-only data.
+* `GET /api/v1/copilot/capabilities` — expose the read-only tool contract.
+
+Rail Sarthi uses **Gemini 2.5 Flash** by default because it provides low-latency
+conversation at a practical operating cost. Set `RAIL_SARTHI_MODEL` to use an
+approved compatible Gemini model without changing application code. When
+`GEMINI_API_KEY` is configured, the model drafts the explanation from the
+server-side snapshot. Without the key, a deterministic local summary is used.
+Both paths return `read_only: true`, `write_actions_available: []`, and an
+explicit statement that no operational state was changed.

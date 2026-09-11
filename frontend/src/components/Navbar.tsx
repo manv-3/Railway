@@ -3,6 +3,7 @@ import { AppBar, Toolbar, Typography, Button, Box, Chip } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import TrainIcon from '@mui/icons-material/Train';
 import { getAuthenticatedUser, logout } from '../services/api';
+import { ReadOnlyCopilot } from './ReadOnlyCopilot';
 
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -63,6 +64,7 @@ export const Navbar: React.FC = () => {
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <ReadOnlyCopilot />
           <Chip
             label={`${user?.username || 'Session'} • LIVE`}
             color="success"

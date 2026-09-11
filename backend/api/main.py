@@ -22,6 +22,7 @@ from api.routes import (
     simulation_router,
     ml_router,
     telemetry_router,
+    copilot_router,
 )
 from api.routes.auth import router as auth_router
 from database.connection import engine, Base
@@ -90,6 +91,7 @@ app.include_router(blocks_router)
 app.include_router(simulation_router)
 app.include_router(ml_router)
 app.include_router(telemetry_router)
+app.include_router(copilot_router)
 
 # ─── Prometheus FastAPI Instrumentator (V3-09) ────────────────────────────────
 if PROMETHEUS_ENABLED:

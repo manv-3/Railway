@@ -5,3 +5,4 @@ from .blocks import router as blocks_router
 from .simulation import router as simulation_router
 from .ml import router as ml_router
 from .telemetry import router as telemetry_router
+from .copilot import router as copilot_router

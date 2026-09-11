@@ -1,8 +1,8 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-sqlalchemy==2.0.23
+sqlalchemy==2.0.41
 alembic==1.12.1
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.10
 geoalchemy2==0.14.2
 redis==5.0.1
 pydantic==2.5.0
@@ -12,12 +12,12 @@ passlib[bcrypt]==1.7.4
 # passlib 1.7.4 is not compatible with bcrypt 5.x during backend detection.
 bcrypt==4.0.1
 python-multipart==0.0.6
-ortools==9.8.3296
-xgboost==2.0.2
-scikit-learn==1.3.2
-pandas==2.1.3
-numpy==1.26.2
-shap==0.43.0
+ortools==9.12.4544
+xgboost==2.1.4
+scikit-learn==1.6.1
+pandas==2.2.3
+numpy==2.2.2
+shap==0.46.0
 httpx==0.25.2
 pytest==7.4.3
 pytest-asyncio==0.21.1
@@ -27,7 +27,7 @@ slowapi==0.1.9
 prometheus-client==0.19.0
 prometheus-fastapi-instrumentator==6.1.0
 # V3-04: Async task queue
-celery[redis]==5.3.4
+celery[redis]==5.4.0
 # V3-04: Additional FastAPI deps
 anyio>=3.7.1,<4.0.0
 

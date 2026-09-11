@@ -229,3 +229,22 @@ export const routeMachinery = async (): Promise<any> => {
   const res = await apiClient.post('/api/v1/corridor/route-machinery');
   return res.data;
 };
+
+export interface CopilotResponse {
+  bot_name: string;
+  answer: string;
+  as_of_utc: string;
+  tools_used: string[];
+  checks: { name: string; status: string; detail: string }[];
+  sources: string[];
+  model: string;
+  confidence: string;
+  read_only: boolean;
+  write_actions_available: string[];
+  disclaimer: string;
+}
+
+export const askReadOnlyCopilot = async (question: string): Promise<CopilotResponse> => {
+  const res = await apiClient.post<CopilotResponse>('/api/v1/copilot/chat', { question });
+  return res.data;
+};

@@ -3,7 +3,11 @@ import json
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-import shap
+
+try:
+    import shap
+except ImportError:
+    shap = None
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "xgboost_risk_model.json")
 FEATURE_NAMES = [
@@ -78,12 +82,14 @@ def train_and_save_model():
     print(f"Saving model to {MODEL_PATH}...")
     model.save_model(MODEL_PATH)
 
-    # Verify SHAP TreeExplainer
-    print("Verifying SHAP TreeExplainer compatibility...")
-    explainer = shap.TreeExplainer(model)
-    sample_X = X.iloc[:5]
-    shap_vals = explainer.shap_values(sample_X)
-    print("SHAP TreeExplainer initialized successfully! Sample shape:", shap_vals.shape)
+    if shap is not None:
+        print("Verifying SHAP TreeExplainer compatibility...")
+        explainer = shap.TreeExplainer(model)
+        sample_X = X.iloc[:5]
+        shap_vals = explainer.shap_values(sample_X)
+        print("SHAP TreeExplainer initialized successfully! Sample shape:", shap_vals.shape)
+    else:
+        print("SHAP is unavailable; model saved without SHAP verification.")
 
     return model
 

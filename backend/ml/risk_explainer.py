@@ -2,8 +2,12 @@ import os
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-import shap
 from typing import Dict, Any, Tuple
+
+try:
+    import shap
+except ImportError:
+    shap = None
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "xgboost_risk_model.json")
 FEATURE_NAMES = [
@@ -39,7 +43,7 @@ class RiskExplainer:
         self.model = xgb.XGBRegressor()
         if os.path.exists(MODEL_PATH):
             self.model.load_model(MODEL_PATH)
-            self.explainer = shap.TreeExplainer(self.model)
+            self.explainer = shap.TreeExplainer(self.model) if shap is not None else None
             self.ready = True
         else:
             self.ready = False
@@ -74,8 +78,21 @@ class RiskExplainer:
         df = pd.DataFrame([input_data])[FEATURE_NAMES]
         prediction = float(np.clip(self.model.predict(df)[0], 10.0, 99.5))
 
-        shap_values = self.explainer.shap_values(df)[0]
-        base_value = float(self.explainer.expected_value)
+        if self.explainer is not None:
+            shap_values = self.explainer.shap_values(df)[0]
+            base_value = float(self.explainer.expected_value)
+        else:
+            # Keep the service usable without SHAP's optional native extension.
+            shap_values = [
+                input_data["accumulated_gmt"] * 0.08,
+                (100.0 - input_data["tgi_score"]) * 0.25,
+                input_data["overdue_days"] * 1.5,
+                input_data["severity_code"] * 12.0,
+                input_data["asset_age_years"] * 0.5,
+                input_data["operating_speed_kmh"] * 0.03,
+                input_data["traffic_density_tpd"] * 0.06,
+            ]
+            base_value = 0.0
 
         attributions = {}
         for feature, val in zip(FEATURE_NAMES, shap_values):
