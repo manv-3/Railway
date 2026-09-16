@@ -6,7 +6,7 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     plan: free
-    region: oregon
+    region: singapore
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
@@ -31,8 +31,9 @@ services:
   - type: keyvalue
     name: railway-redis
     plan: free
-    region: oregon
+    region: singapore
     maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
 
 databases:
   # Managed PostgreSQL Database
@@ -40,4 +41,4 @@ databases:
     plan: free
     databaseName: railway_ai
     user: railway
-    region: oregon
+    region: singapore
