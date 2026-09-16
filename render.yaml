@@ -14,7 +14,8 @@ services:
           name: railway-db
           property: connectionString
       - key: REDIS_URL
-        fromDatabase:
+        fromService:
+          type: keyvalue
           name: railway-redis
           property: connectionString
       - key: APP_ENV
@@ -26,32 +27,17 @@ services:
       - key: GEMINI_API_KEY
         sync: false
 
-  # Optional Frontend Static Site (can also be deployed on Vercel)
-  - type: web
-    name: railway-frontend
-    runtime: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: ./frontend/dist
+  # Managed Key-Value Store (Redis)
+  - type: keyvalue
+    name: railway-redis
     plan: free
     region: oregon
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: railway-backend
-          property: host
+    maxmemoryPolicy: allkeys-lru
 
 databases:
+  # Managed PostgreSQL Database
   - name: railway-db
     plan: free
     databaseName: railway_ai
     user: railway
-    region: oregon
-
-  - name: railway-redis
-    plan: free
     region: oregon
