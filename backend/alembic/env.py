@@ -23,6 +23,8 @@ config = context.config
 # Override sqlalchemy.url from DATABASE_URL environment variable (production)
 env_db_url = os.getenv("DATABASE_URL")
 if env_db_url:
+    if env_db_url.startswith("postgres://"):
+        env_db_url = env_db_url.replace("postgres://", "postgresql://", 1)
     config.set_main_option("sqlalchemy.url", env_db_url)
 
 if config.config_file_name is not None:

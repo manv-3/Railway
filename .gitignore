@@ -49,6 +49,10 @@ dist-ssr/
 postgres_data/
 redis_data/
 
+# Celery
+celerybeat-schedule*
+**/celerybeat-schedule*
+
 # Agent Scratchpad, Prompts & Working Documents
 agent.md
 IMPROVE*.md

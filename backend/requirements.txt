@@ -26,8 +26,8 @@ slowapi==0.1.9
 # V3-09: Prometheus metrics
 prometheus-client==0.19.0
 prometheus-fastapi-instrumentator==6.1.0
-# V3-04: Async task queue
-celery[redis]==5.3.4
+# V3-04: Async task queue (celery >=5.3.6 supports redis 5.x)
+celery[redis]>=5.3.6,<6.0.0
 # V3-04: Additional FastAPI deps
 anyio>=3.7.1,<4.0.0
-
+google-generativeai

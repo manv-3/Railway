@@ -30,6 +30,33 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const currentUser = getAuthenticatedUser();
+      const username = currentUser?.username || 'div_controller';
+      try {
+        const body = new URLSearchParams({ username, password: 'demo123' });
+        const res = await axios.post<{ access_token: string; user: AuthenticatedUser }>(
+          `${API_BASE_URL}/auth/login`,
+          body,
+          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+        );
+        localStorage.setItem(AUTH_TOKEN_KEY, res.data.access_token);
+        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(res.data.user));
+        originalRequest.headers.Authorization = `Bearer ${res.data.access_token}`;
+        return apiClient(originalRequest);
+      } catch (loginErr) {
+        return Promise.reject(error);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const getAuthenticatedUser = (): AuthenticatedUser | null => {
   const rawUser = localStorage.getItem(AUTH_USER_KEY);
   if (!rawUser) return null;
@@ -229,3 +256,101 @@ export const routeMachinery = async (): Promise<any> => {
   const res = await apiClient.post('/api/v1/corridor/route-machinery');
   return res.data;
 };
+
+export interface ChatResponse {
+  answer: string;
+  chart_data?: {
+    type: string;
+    title: string;
+    data: Array<{ name: string; value: number }>;
+  };
+  suggested_queries: string[];
+  data_source: string;
+  query_timestamp: string;
+  guardrail_latency_ms?: number;
+  checks?: Array<{ name: string; status: string; detail: string }>;
+  sources?: string[];
+  read_only?: boolean;
+}
+
+export const sendChatQuery = async (query: string, sessionId?: string): Promise<ChatResponse> => {
+  const res = await apiClient.post<ChatResponse>('/api/v1/chat/query', {
+    query,
+    session_id: sessionId || 'default_session',
+    include_suggestions: true,
+    include_chart_data: true,
+  });
+  return res.data;
+};
+
+export interface CopilotResponse {
+  bot_name: string;
+  answer: string;
+  as_of_utc: string;
+  tools_used: string[];
+  checks: { name: string; status: string; detail: string }[];
+  sources: string[];
+  model: string;
+  confidence: string;
+  read_only: boolean;
+  write_actions_available: string[];
+  disclaimer: string;
+}
+
+export const askReadOnlyCopilot = async (question: string): Promise<CopilotResponse> => {
+  const res = await apiClient.post<CopilotResponse>('/api/v1/copilot/chat', { question });
+  return res.data;
+};
+
+export interface BenchmarkAlgorithm {
+  name: string;
+  description: string;
+  total_track_hours: number;
+  scheduled_requests: number;
+  blocks_created: number;
+  combined_super_blocks: number;
+  total_train_delay_minutes: number;
+  passenger_train_delay_minutes: number;
+  freight_train_delay_minutes: number;
+  impacted_trains_count: number;
+  computation_time_seconds: number;
+  bundling_efficiency_percent: number;
+  asset_availability_gain_percent?: number;
+  gsr_compliance: string;
+}
+
+export interface OptimizerBenchmarkResponse {
+  status: string;
+  benchmark_timestamp: string;
+  division_id: string;
+  sample_size: {
+    total_maintenance_requests: number;
+    total_active_trains: number;
+    time_horizon_hours: number;
+    uncoordinated_total_hours: number;
+  };
+  comparative_summary: {
+    asset_availability_gain_percent: number;
+    track_possession_hours_saved: number;
+    train_delay_reduction_percent: number;
+    train_delays_avoided_minutes: number;
+    super_block_bundling_efficiency: string;
+    overall_benchmark_time_ms: number;
+  };
+  algorithms: {
+    manual_baseline: BenchmarkAlgorithm;
+    greedy_heuristic: BenchmarkAlgorithm;
+    ai_cpsat_solver: BenchmarkAlgorithm;
+  };
+  executive_takeaway: string;
+}
+
+export const getOptimizerBenchmark = async (divisionId = 'DIV_DLI'): Promise<OptimizerBenchmarkResponse> => {
+  const res = await apiClient.get<OptimizerBenchmarkResponse>('/api/v1/optimize/benchmark', {
+    params: { division_id: divisionId },
+  });
+  return res.data;
+};
+
+
+

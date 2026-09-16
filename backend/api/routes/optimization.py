@@ -24,6 +24,7 @@ from database.models import (
 )
 from optimization.cpsat_optimizer import CPSATBlockOptimizer
 from optimization.greedy_scheduler import GreedyBlockScheduler
+from optimization.optimizer_benchmark import OptimizerBenchmarkRunner
 from simulation.train_delay_simulator import TrainDispatchSimulator
 from agents.llm_operational_reasoner import LLMOperationalReasoner
 from api.routes.auth import require_division_access
@@ -398,4 +399,44 @@ def get_optimization_status(
     if result:
         progress["result"] = result
     return progress
+
+
+class BenchmarkRequest(BaseModel):
+    division_id: Optional[str] = "DIV_DLI"
+    time_horizon_hours: Optional[int] = 24
+
+
+@router.get("/benchmark")
+def get_optimizer_benchmark(
+    division_id: Optional[str] = Query("DIV_DLI", description="Operational division to benchmark"),
+    time_horizon_hours: Optional[int] = Query(24, ge=1, le=168, description="Horizon in hours"),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_division_access),
+):
+    """
+    Evaluates 3-way optimization benchmark:
+    1. Traditional Manual Departmental Isolation
+    2. Priority Greedy Sequential Heuristic
+    3. AI CP-SAT Coordinated Multi-Department Super-Blocks
+    """
+    runner = OptimizerBenchmarkRunner(db)
+    return runner.run_benchmark(
+        division_id=division_id,
+        time_horizon_hours=time_horizon_hours
+    )
+
+
+@router.post("/benchmark")
+def run_optimizer_benchmark_post(
+    payload: BenchmarkRequest,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_division_access),
+):
+    """Trigger an interactive benchmark run for a specific division and horizon."""
+    runner = OptimizerBenchmarkRunner(db)
+    return runner.run_benchmark(
+        division_id=payload.division_id,
+        time_horizon_hours=payload.time_horizon_hours or 24
+    )
+
 

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { Box, ThemeProvider, createTheme, CssBaseline, LinearProgress } from '@mui/material';
 
 import { Navbar } from './components/Navbar';
+import { ChatAssistantWidget } from './components/ChatAssistantWidget';
 import { AuthenticatedUser, getAuthenticatedUser } from './services/api';
 
 // Route-level code splitting via React.lazy (V3-06 - P1)
@@ -66,6 +67,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {!isLoginPage && <Navbar />}
       <Box sx={{ flexGrow: 1 }}>{children}</Box>
+      {!isLoginPage && <ChatAssistantWidget />}
     </Box>
   );
 };

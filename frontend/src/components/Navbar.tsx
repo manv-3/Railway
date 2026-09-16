@@ -2,6 +2,7 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Chip } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import TrainIcon from '@mui/icons-material/Train';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import { getAuthenticatedUser, logout } from '../services/api';
 
 export const Navbar: React.FC = () => {
@@ -63,6 +64,24 @@ export const Navbar: React.FC = () => {
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Button
+            color="inherit"
+            startIcon={<SmartToyIcon sx={{ color: '#ffab00' }} />}
+            onClick={() => window.dispatchEvent(new CustomEvent('open-rail-copilot'))}
+            sx={{
+              textTransform: 'none',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              borderRadius: 2,
+              border: '1px solid rgba(255,171,0,0.4)',
+              backgroundColor: 'rgba(255,171,0,0.08)',
+              '&:hover': {
+                backgroundColor: 'rgba(255,171,0,0.18)',
+              },
+            }}
+          >
+            Rail Sarthi AI
+          </Button>
           <Chip
             label={`${user?.username || 'Session'} • LIVE`}
             color="success"

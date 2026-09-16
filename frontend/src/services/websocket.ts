@@ -11,7 +11,17 @@ class CorridorWebSocketService {
   }
 
   public connect() {
-    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/corridor';
+    let wsUrl = import.meta.env.VITE_WS_URL;
+    if (!wsUrl) {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      if (apiUrl) {
+        const wsProto = apiUrl.startsWith('https://') ? 'wss://' : 'ws://';
+        const host = apiUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+        wsUrl = `${wsProto}${host}/ws/corridor`;
+      } else {
+        wsUrl = 'ws://localhost:8000/ws/corridor';
+      }
+    }
     
     try {
       this.ws = new WebSocket(wsUrl);

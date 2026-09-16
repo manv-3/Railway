@@ -22,6 +22,8 @@ from api.routes import (
     simulation_router,
     ml_router,
     telemetry_router,
+    chat_router,
+    copilot_router,
 )
 from api.routes.auth import router as auth_router
 from database.connection import engine, Base
@@ -76,6 +78,7 @@ allowed_origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=r"^https?://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -83,6 +86,7 @@ app.add_middleware(
 
 # ─── Include Routers ──────────────────────────────────────────────────────────
 app.include_router(auth_router)
+app.include_router(chat_router)  # Conversational AI with hierarchy filtering
 app.include_router(corridor_router)
 app.include_router(maintenance_router)
 app.include_router(optimization_router)
@@ -90,6 +94,7 @@ app.include_router(blocks_router)
 app.include_router(simulation_router)
 app.include_router(ml_router)
 app.include_router(telemetry_router)
+app.include_router(copilot_router)
 
 # ─── Prometheus FastAPI Instrumentator (V3-09) ────────────────────────────────
 if PROMETHEUS_ENABLED:
