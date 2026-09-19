@@ -29,7 +29,7 @@ export const CorridorMap: React.FC<CorridorMapProps> = ({
   };
 
   return (
-    <Box sx={{ height, width: '100%', borderRadius: 2, overflow: 'hidden', boxShadow: 2 }}>
+    <Box sx={{ height, width: '100%', borderRadius: 2, overflow: 'hidden', border: '1px solid #cbd5e1', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
       <MapContainer
         center={defaultCenter}
         zoom={7}
@@ -38,7 +38,7 @@ export const CorridorMap: React.FC<CorridorMapProps> = ({
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
 
         {/* Draw Directional Railway Tracks */}
@@ -48,7 +48,7 @@ export const CorridorMap: React.FC<CorridorMapProps> = ({
           if (!start || !end) return null;
 
           const isUp = sec.track_direction === 'UP';
-          const color = isUp ? '#0288d1' : '#7b1fa2'; // Blue for Up, Purple for Down
+          const color = isUp ? '#0284c7' : '#7c3aed'; // Clean Blue for Up, Purple for Down
 
           return (
             <Polyline

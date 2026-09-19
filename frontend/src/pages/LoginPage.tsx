@@ -36,7 +36,7 @@ const demoRoles = [
     name: 'Sr. DOM (Division)',
     tier: 'Tier 3 • Operational Core',
     desc: 'Joint block sanction, CP-SAT solve, What-If simulation',
-    color: '#3b82f6',
+    color: '#0f2b5c',
     recommended: true,
   },
   {
@@ -44,28 +44,28 @@ const demoRoles = [
     name: 'Station Master (GZB)',
     tier: 'Tier 4 • Safety Memos',
     desc: 'Form T/351 Disconnection, track circuit isolation',
-    color: '#f59e0b',
+    color: '#d97706',
   },
   {
     id: 'field_sse',
     name: 'Field SSE (P-Way)',
     tier: 'Tier 4 • Execution',
     desc: 'Defect requisition, track fit certification',
-    color: '#10b981',
+    color: '#059669',
   },
   {
     id: 'zonal_gm',
     name: 'Zonal GM / PCOM',
     tier: 'Tier 2 • Strategic HQ',
     desc: 'Inter-divisional boundary sync, machine chaining',
-    color: '#06b6d4',
+    color: '#0284c7',
   },
   {
     id: 'board_exec',
     name: 'Railway Board (CRB)',
     tier: 'Tier 1 • National Apex',
     desc: 'Pan-India asset availability & corridor KPIs',
-    color: '#a855f7',
+    color: '#7c3aed',
   },
 ];
 
@@ -100,11 +100,11 @@ export const LoginPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: '#070b12',
+        bgcolor: '#f1f5f9',
         backgroundImage: `
-          radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.18) 0%, transparent 65%),
-          radial-gradient(circle at 10% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
-          radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.06) 0%, transparent 50%)
+          radial-gradient(circle at 50% 0%, rgba(15, 43, 92, 0.08) 0%, transparent 60%),
+          radial-gradient(circle at 10% 80%, rgba(2, 132, 199, 0.05) 0%, transparent 50%),
+          radial-gradient(circle at 90% 80%, rgba(217, 119, 6, 0.04) 0%, transparent 50%)
         `,
         display: 'flex',
         flexDirection: 'column',
@@ -125,9 +125,9 @@ export const LoginPage: React.FC = () => {
           px: 2.5,
           py: 0.8,
           borderRadius: 20,
-          bgcolor: 'rgba(15, 23, 42, 0.7)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(10px)',
+          bgcolor: '#ffffff',
+          border: '1px solid #cbd5e1',
+          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
         }}
       >
         <Box
@@ -135,9 +135,8 @@ export const LoginPage: React.FC = () => {
             width: 8,
             height: 8,
             borderRadius: '50%',
-            bgcolor: '#10b981',
-            boxShadow: '0 0 10px #10b981',
-            animation: 'pulse-live 2s infinite',
+            bgcolor: '#059669',
+            boxShadow: '0 0 8px #059669',
           }}
         />
         <Typography
@@ -145,8 +144,9 @@ export const LoginPage: React.FC = () => {
           sx={{
             fontFamily: '"JetBrains Mono", monospace',
             fontSize: '0.75rem',
-            color: '#94a3b8',
-            letterSpacing: '0.08em',
+            color: '#334155',
+            fontWeight: 700,
+            letterSpacing: '0.04em',
             textTransform: 'uppercase',
           }}
         >
@@ -154,16 +154,15 @@ export const LoginPage: React.FC = () => {
         </Typography>
       </Box>
 
-      {/* Main Glass Card */}
+      {/* Main Enterprise Card */}
       <Card
         sx={{
           width: '100%',
           maxWidth: 640,
-          bgcolor: 'rgba(15, 23, 42, 0.85)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 4,
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.75)',
+          bgcolor: '#ffffff',
+          border: '1px solid #cbd5e1',
+          borderRadius: 3,
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
           overflow: 'hidden',
         }}
       >
@@ -171,12 +170,13 @@ export const LoginPage: React.FC = () => {
         <Box
           sx={{
             p: 3,
-            pb: 2,
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            pb: 2.5,
+            borderBottom: '2px solid #1e3a8a',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: 'linear-gradient(90deg, rgba(37, 99, 235, 0.1) 0%, transparent 100%)',
+            bgcolor: '#0f2b5c',
+            color: '#ffffff',
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -184,48 +184,48 @@ export const LoginPage: React.FC = () => {
               sx={{
                 width: 48,
                 height: 48,
-                borderRadius: 3,
-                bgcolor: 'rgba(37, 99, 235, 0.2)',
-                border: '1px solid rgba(59, 130, 246, 0.4)',
+                borderRadius: 2.5,
+                bgcolor: 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
               }}
             >
-              <TrainIcon sx={{ fontSize: 30, color: '#60a5fa' }} />
+              <TrainIcon sx={{ fontSize: 30, color: '#ffffff' }} />
             </Box>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, color: '#f8fafc', lineHeight: 1.2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 800, color: '#ffffff', lineHeight: 1.2 }}>
                 INDIAN RAILWAYS
               </Typography>
-              <Typography variant="caption" sx={{ color: '#06b6d4', fontWeight: 700, letterSpacing: '0.05em' }}>
+              <Typography variant="caption" sx={{ color: '#93c5fd', fontWeight: 700, letterSpacing: '0.05em' }}>
                 AI BLOCK PLANNING & POSSESSION PLATFORM
               </Typography>
             </Box>
           </Box>
           <Chip
-            icon={<ShieldIcon sx={{ fontSize: '14px !important', color: '#10b981 !important' }} />}
+            icon={<ShieldIcon sx={{ fontSize: '14px !important', color: '#ffffff !important' }} />}
             label="PS 26027"
             size="small"
             sx={{
-              bgcolor: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              color: '#34d399',
+              bgcolor: 'rgba(255, 255, 255, 0.18)',
+              border: '1px solid rgba(255, 255, 255, 0.35)',
+              color: '#ffffff',
               fontWeight: 800,
               fontSize: '0.72rem',
             }}
           />
         </Box>
 
-        <CardContent sx={{ p: 3.5 }}>
+        <CardContent sx={{ p: 3.5, bgcolor: '#ffffff' }}>
           {/* Role Quick Selector */}
           <Typography
             variant="caption"
             sx={{
-              fontWeight: 700,
-              color: '#94a3b8',
-              letterSpacing: '0.06em',
+              fontWeight: 800,
+              color: '#0f2b5c',
+              letterSpacing: '0.05em',
               textTransform: 'uppercase',
               display: 'block',
               mb: 1.5,
@@ -243,23 +243,23 @@ export const LoginPage: React.FC = () => {
                     onClick={() => selectRole(role.id)}
                     sx={{
                       p: 1.5,
-                      borderRadius: 2.5,
+                      borderRadius: 2,
                       cursor: 'pointer',
-                      bgcolor: isSelected ? 'rgba(59, 130, 246, 0.15)' : 'rgba(15, 23, 42, 0.5)',
+                      bgcolor: isSelected ? '#eff6ff' : '#ffffff',
                       border: isSelected
-                        ? '1.5px solid #3b82f6'
-                        : '1px solid rgba(255, 255, 255, 0.08)',
-                      transition: 'all 0.2s ease',
+                        ? '2px solid #0f2b5c'
+                        : '1px solid #e2e8f0',
+                      transition: 'all 0.15s ease',
                       position: 'relative',
                       overflow: 'hidden',
                       '&:hover': {
-                        border: '1.5px solid rgba(59, 130, 246, 0.6)',
-                        bgcolor: 'rgba(59, 130, 246, 0.08)',
+                        border: isSelected ? '2px solid #0f2b5c' : '1px solid #94a3b8',
+                        bgcolor: isSelected ? '#eff6ff' : '#f8fafc',
                       },
                     }}
                   >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 800, color: isSelected ? '#60a5fa' : '#f1f5f9', fontSize: '0.85rem' }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 800, color: isSelected ? '#0f2b5c' : '#1e293b', fontSize: '0.85rem' }}>
                         {role.name}
                       </Typography>
                       {role.recommended && (
@@ -270,8 +270,8 @@ export const LoginPage: React.FC = () => {
                             height: 18,
                             fontSize: '0.62rem',
                             fontWeight: 800,
-                            bgcolor: '#f59e0b',
-                            color: '#000',
+                            bgcolor: '#d97706',
+                            color: '#ffffff',
                           }}
                         />
                       )}
@@ -342,14 +342,15 @@ export const LoginPage: React.FC = () => {
               sx={{
                 mt: 2.5,
                 py: 1.3,
-                fontSize: '0.95rem',
+                fontSize: '0.92rem',
                 fontWeight: 800,
                 letterSpacing: '0.04em',
-                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                boxShadow: '0 4px 20px rgba(37, 99, 235, 0.4)',
+                bgcolor: '#0f2b5c',
+                color: '#ffffff',
+                boxShadow: '0 2px 8px rgba(15, 43, 92, 0.25)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                  boxShadow: '0 6px 25px rgba(37, 99, 235, 0.6)',
+                  bgcolor: '#1e3a8a',
+                  boxShadow: '0 4px 12px rgba(15, 43, 92, 0.35)',
                 },
               }}
             >
@@ -363,8 +364,8 @@ export const LoginPage: React.FC = () => {
           sx={{
             px: 3.5,
             py: 1.8,
-            bgcolor: 'rgba(10, 15, 26, 0.95)',
-            borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+            bgcolor: '#f8fafc',
+            borderTop: '1px solid #e2e8f0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -374,14 +375,14 @@ export const LoginPage: React.FC = () => {
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
-              <DnsIcon sx={{ fontSize: 15, color: '#10b981' }} />
-              <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.72rem' }}>
+              <DnsIcon sx={{ fontSize: 15, color: '#059669' }} />
+              <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.72rem', fontWeight: 600 }}>
                 PostgreSQL + Redis Connected
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
-              <RadarIcon sx={{ fontSize: 15, color: '#3b82f6' }} />
-              <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.72rem' }}>
+              <RadarIcon sx={{ fontSize: 15, color: '#0284c7' }} />
+              <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.72rem', fontWeight: 600 }}>
                 CP-SAT Solver Ready
               </Typography>
             </Box>
@@ -394,3 +395,5 @@ export const LoginPage: React.FC = () => {
     </Box>
   );
 };
+
+export default LoginPage;

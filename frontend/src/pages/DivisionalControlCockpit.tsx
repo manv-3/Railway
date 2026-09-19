@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Button, Chip, CircularProgress,
   ToggleButtonGroup, ToggleButton, TextField, InputAdornment,
-  Snackbar, Tooltip, IconButton
+  Snackbar, Tooltip, IconButton, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Paper
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -15,11 +16,16 @@ import DirectionsTransitIcon from '@mui/icons-material/DirectionsTransit';
 import ShieldIcon from '@mui/icons-material/Shield';
 import MapIcon from '@mui/icons-material/Map';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import ConstructionIcon from '@mui/icons-material/Construction';
+import EngineeringIcon from '@mui/icons-material/Engineering';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
 import CloseIcon from '@mui/icons-material/Close';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import { CorridorMap } from '../components/CorridorMap';
 import { YardInterlockingSchematic } from '../components/YardInterlockingSchematic';
+import { CorridorStringChart } from '../components/CorridorStringChart';
 import { SafetyMemoDialog } from '../components/SafetyMemoDialog';
 import { SHAPExplainDialog } from '../components/SHAPExplainDialog';
 import { WhatIfComparisonDialog } from '../components/WhatIfComparisonDialog';
@@ -42,7 +48,7 @@ export const DivisionalControlCockpit: React.FC = () => {
   const [metrics, setMetrics] = useState<OptimizationMetrics | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedBlock, setSelectedBlock] = useState<MaintenanceBlock | null>(null);
-  const [viewMode, setViewMode] = useState<'gis' | 'schematic'>('gis');
+  const [viewMode, setViewMode] = useState<'timeline' | 'gis' | 'schematic'>('timeline');
   const [schematicStation, setSchematicStation] = useState<'GZB' | 'ALJN'>('GZB');
   const [safetyDialogOpen, setSafetyDialogOpen] = useState(false);
 
@@ -59,6 +65,9 @@ export const DivisionalControlCockpit: React.FC = () => {
   // Real-time toast state
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [benchmarkOpen, setBenchmarkOpen] = useState(false);
+
+  // Interactive regulation state for real-life usability
+  const [regulatedTrain, setRegulatedTrain] = useState<string | null>(null);
 
   const loadData = async () => {
     try {
@@ -214,23 +223,23 @@ export const DivisionalControlCockpit: React.FC = () => {
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        bgcolor: '#080c14',
-        color: '#f8fafc',
+        bgcolor: '#f8fafc',
+        color: '#0f172a',
       }}
     >
-      {/* ─── TOP COMMAND STRIP (46px) ────────────────────────────────────────── */}
+      {/* ─── TOP COMMAND STRIP (48px) ────────────────────────────────────────── */}
       <Box
         sx={{
           height: 48,
           flexShrink: 0,
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-          bgcolor: 'rgba(11, 15, 25, 0.95)',
-          backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid #e2e8f0',
+          bgcolor: '#ffffff',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           px: 2,
           gap: 2,
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
         }}
       >
         {/* Left: Corridor & TCAS Telemetry */}
@@ -241,9 +250,8 @@ export const DivisionalControlCockpit: React.FC = () => {
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                bgcolor: '#10b981',
-                boxShadow: '0 0 10px #10b981',
-                animation: 'pulse 2s infinite',
+                bgcolor: '#059669',
+                boxShadow: '0 0 8px #059669',
               }}
             />
             <Typography
@@ -251,8 +259,8 @@ export const DivisionalControlCockpit: React.FC = () => {
               sx={{
                 fontFamily: '"JetBrains Mono", monospace',
                 fontWeight: 800,
-                color: '#f8fafc',
-                fontSize: '0.82rem',
+                color: '#0f2b5c',
+                fontSize: '0.85rem',
                 letterSpacing: '-0.01em',
               }}
             >
@@ -265,40 +273,40 @@ export const DivisionalControlCockpit: React.FC = () => {
                 height: 20,
                 fontSize: '0.65rem',
                 fontWeight: 800,
-                bgcolor: 'rgba(59, 130, 246, 0.15)',
-                color: '#60a5fa',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
+                bgcolor: '#eff6ff',
+                color: '#1e40af',
+                border: '1px solid #bfdbfe',
               }}
             />
           </Box>
 
-          <Box sx={{ height: 16, width: '1px', bgcolor: 'rgba(255,255,255,0.1)' }} />
+          <Box sx={{ height: 16, width: '1px', bgcolor: '#cbd5e1' }} />
 
           <Chip
-            icon={<DirectionsTransitIcon sx={{ fontSize: '13px !important', color: '#10b981 !important' }} />}
+            icon={<DirectionsTransitIcon sx={{ fontSize: '13px !important', color: '#059669 !important' }} />}
             label="58 Live Trains"
             size="small"
             sx={{
               height: 22,
               fontSize: '0.7rem',
               fontWeight: 700,
-              bgcolor: 'rgba(16, 185, 129, 0.1)',
-              color: '#34d399',
-              border: '1px solid rgba(16, 185, 129, 0.25)',
+              bgcolor: '#ecfdf5',
+              color: '#047857',
+              border: '1px solid #a7f3d0',
             }}
           />
 
           <Chip
-            icon={<ShieldIcon sx={{ fontSize: '13px !important', color: '#06b6d4 !important' }} />}
+            icon={<ShieldIcon sx={{ fontSize: '13px !important', color: '#d97706 !important' }} />}
             label="Kavach TCAS L2 Active"
             size="small"
             sx={{
               height: 22,
               fontSize: '0.7rem',
               fontWeight: 700,
-              bgcolor: 'rgba(6, 182, 212, 0.1)',
-              color: '#22d3ee',
-              border: '1px solid rgba(6, 182, 212, 0.25)',
+              bgcolor: '#fffbeb',
+              color: '#b45309',
+              border: '1px solid #fde68a',
             }}
           />
         </Box>
@@ -310,44 +318,44 @@ export const DivisionalControlCockpit: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               gap: 1.5,
-              px: 1.5,
-              py: 0.3,
+              px: 1.8,
+              py: 0.35,
               borderRadius: 2,
-              bgcolor: 'rgba(15, 23, 42, 0.8)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
+              bgcolor: '#f1f5f9',
+              border: '1px solid #e2e8f0',
             }}
           >
-            <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.72rem' }}>
+            <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.72rem' }}>
               Availability:{' '}
-              <strong style={{ color: '#10b981', fontFamily: '"JetBrains Mono", monospace' }}>
+              <strong style={{ color: '#059669', fontFamily: '"JetBrains Mono", monospace' }}>
                 +{metrics ? metrics.asset_availability_gain_percent.toFixed(1) : '32.4'}%
               </strong>
             </Typography>
-            <Box sx={{ height: 12, width: '1px', bgcolor: 'rgba(255,255,255,0.1)' }} />
-            <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.72rem' }}>
+            <Box sx={{ height: 12, width: '1px', bgcolor: '#cbd5e1' }} />
+            <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.72rem' }}>
               Saved:{' '}
-              <strong style={{ color: '#06b6d4', fontFamily: '"JetBrains Mono", monospace' }}>
+              <strong style={{ color: '#0284c7', fontFamily: '"JetBrains Mono", monospace' }}>
                 {metrics ? metrics.time_saved_hours.toFixed(1) : '21.1'}h
               </strong>
             </Typography>
-            <Box sx={{ height: 12, width: '1px', bgcolor: 'rgba(255,255,255,0.1)' }} />
-            <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.72rem' }}>
+            <Box sx={{ height: 12, width: '1px', bgcolor: '#cbd5e1' }} />
+            <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.72rem' }}>
               Detentions:{' '}
-              <strong style={{ color: '#a855f7', fontFamily: '"JetBrains Mono", monospace' }}>
+              <strong style={{ color: '#0f2b5c', fontFamily: '"JetBrains Mono", monospace' }}>
                 0
               </strong>
             </Typography>
-            <Box sx={{ height: 12, width: '1px', bgcolor: 'rgba(255,255,255,0.1)' }} />
-            <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.72rem' }}>
+            <Box sx={{ height: 12, width: '1px', bgcolor: '#cbd5e1' }} />
+            <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.72rem' }}>
               Bundling Multiplier:{' '}
-              <strong style={{ color: '#f59e0b', fontFamily: '"JetBrains Mono", monospace' }}>
+              <strong style={{ color: '#d97706', fontFamily: '"JetBrains Mono", monospace' }}>
                 {metrics ? `${(metrics.scheduled_requests / (metrics.total_blocks_created || 1)).toFixed(1)}x` : '3.8x'}
               </strong>
             </Typography>
           </Box>
         </Box>
 
-        {/* Right: Tactical Triggers */}
+        {/* Right: Tactical Action Triggers */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Button
             size="small"
@@ -358,12 +366,12 @@ export const DivisionalControlCockpit: React.FC = () => {
             sx={{
               height: 28,
               fontSize: '0.72rem',
-              fontWeight: 800,
+              fontWeight: 700,
               borderRadius: 1.5,
-              borderColor: 'rgba(59, 130, 246, 0.4)',
-              color: '#60a5fa',
-              bgcolor: 'rgba(59, 130, 246, 0.08)',
-              '&:hover': { bgcolor: 'rgba(59, 130, 246, 0.2)', borderColor: '#60a5fa' },
+              borderColor: '#cbd5e1',
+              color: '#1e40af',
+              bgcolor: '#ffffff',
+              '&:hover': { bgcolor: '#f1f5f9', borderColor: '#94a3b8' },
             }}
           >
             Benchmark ROI
@@ -378,12 +386,12 @@ export const DivisionalControlCockpit: React.FC = () => {
             sx={{
               height: 28,
               fontSize: '0.72rem',
-              fontWeight: 800,
+              fontWeight: 700,
               borderRadius: 1.5,
-              borderColor: 'rgba(245, 158, 11, 0.4)',
-              color: '#fbbf24',
-              bgcolor: 'rgba(245, 158, 11, 0.08)',
-              '&:hover': { bgcolor: 'rgba(245, 158, 11, 0.2)', borderColor: '#fbbf24' },
+              borderColor: '#fde68a',
+              color: '#b45309',
+              bgcolor: '#fffbeb',
+              '&:hover': { bgcolor: '#fef3c7', borderColor: '#f59e0b' },
             }}
           >
             What-If: VB +45m
@@ -398,12 +406,12 @@ export const DivisionalControlCockpit: React.FC = () => {
             sx={{
               height: 28,
               fontSize: '0.72rem',
-              fontWeight: 800,
+              fontWeight: 700,
               borderRadius: 1.5,
-              borderColor: 'rgba(239, 68, 68, 0.4)',
-              color: '#f87171',
-              bgcolor: 'rgba(239, 68, 68, 0.08)',
-              '&:hover': { bgcolor: 'rgba(239, 68, 68, 0.2)', borderColor: '#f87171' },
+              borderColor: '#fecaca',
+              color: '#b91c1c',
+              bgcolor: '#fef2f2',
+              '&:hover': { bgcolor: '#fee2e2', borderColor: '#ef4444' },
             }}
           >
             What-If: Rail Fracture
@@ -418,15 +426,15 @@ export const DivisionalControlCockpit: React.FC = () => {
             sx={{
               height: 30,
               fontSize: '0.75rem',
-              fontWeight: 900,
+              fontWeight: 800,
               px: 1.8,
               borderRadius: 1.5,
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              bgcolor: '#0f2b5c',
               color: '#ffffff',
-              boxShadow: '0 0 15px rgba(16, 185, 129, 0.35)',
+              boxShadow: '0 2px 6px rgba(15, 43, 92, 0.25)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
-                boxShadow: '0 0 20px rgba(16, 185, 129, 0.55)',
+                bgcolor: '#1e3a8a',
+                boxShadow: '0 4px 10px rgba(15, 43, 92, 0.35)',
               },
             }}
           >
@@ -451,18 +459,18 @@ export const DivisionalControlCockpit: React.FC = () => {
             minWidth: 320,
             maxWidth: 400,
             flexShrink: 0,
-            borderRight: '1px solid rgba(255, 255, 255, 0.08)',
-            bgcolor: 'rgba(11, 15, 25, 0.65)',
+            borderRight: '1px solid #e2e8f0',
+            bgcolor: '#ffffff',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
           }}
         >
           {/* Queue Header & Filters */}
-          <Box sx={{ p: 1.5, pb: 1, borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+          <Box sx={{ p: 1.5, pb: 1, borderBottom: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="caption" sx={{ fontWeight: 900, letterSpacing: '0.05em', color: '#94a3b8' }}>
+                <Typography variant="caption" sx={{ fontWeight: 800, letterSpacing: '0.04em', color: '#0f2b5c' }}>
                   POSSESSION QUEUE
                 </Typography>
                 <Chip
@@ -472,8 +480,9 @@ export const DivisionalControlCockpit: React.FC = () => {
                     height: 18,
                     fontSize: '0.65rem',
                     fontWeight: 800,
-                    bgcolor: 'rgba(59, 130, 246, 0.15)',
-                    color: '#60a5fa',
+                    bgcolor: '#eff6ff',
+                    color: '#1e40af',
+                    border: '1px solid #bfdbfe',
                   }}
                 />
               </Box>
@@ -505,9 +514,8 @@ export const DivisionalControlCockpit: React.FC = () => {
                 sx: {
                   height: 32,
                   fontSize: '0.75rem',
-                  bgcolor: 'rgba(15, 23, 42, 0.8)',
+                  bgcolor: '#ffffff',
                   borderRadius: 1.5,
-                  '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
                 },
               }}
             />
@@ -516,7 +524,7 @@ export const DivisionalControlCockpit: React.FC = () => {
             <Box sx={{ display: 'flex', gap: 0.6, mt: 1, overflowX: 'auto', pb: 0.2 }}>
               {[
                 { id: 'ALL', label: `All (${blocks.length})` },
-                { id: 'SUPER', label: `Super (${superCount})`, highlight: '#f59e0b' },
+                { id: 'SUPER', label: `Super (${superCount})`, highlight: '#b45309' },
                 { id: 'PLANNED', label: `Plan (${plannedCount})` },
                 { id: 'SANCTIONED', label: `Sanct (${sanctionedCount})` },
                 { id: 'FIT_RESTORED', label: `Fit (${fitCount})` },
@@ -531,15 +539,13 @@ export const DivisionalControlCockpit: React.FC = () => {
                     sx={{
                       height: 22,
                       fontSize: '0.67rem',
-                      fontWeight: 800,
+                      fontWeight: 700,
                       cursor: 'pointer',
-                      bgcolor: isActive ? 'rgba(59, 130, 246, 0.25)' : 'rgba(255, 255, 255, 0.04)',
-                      color: isActive ? (f.highlight || '#60a5fa') : '#94a3b8',
-                      border: isActive
-                        ? `1px solid ${f.highlight || '#3b82f6'}`
-                        : '1px solid rgba(255, 255, 255, 0.06)',
+                      bgcolor: isActive ? '#0f2b5c' : '#ffffff',
+                      color: isActive ? '#ffffff' : '#475569',
+                      border: isActive ? '1px solid #0f2b5c' : '1px solid #cbd5e1',
                       '&:hover': {
-                        bgcolor: 'rgba(59, 130, 246, 0.15)',
+                        bgcolor: isActive ? '#0f2b5c' : '#f1f5f9',
                       },
                     }}
                   />
@@ -557,8 +563,9 @@ export const DivisionalControlCockpit: React.FC = () => {
               display: 'flex',
               flexDirection: 'column',
               gap: 1,
+              bgcolor: '#f8fafc',
               '&::-webkit-scrollbar': { width: '4px' },
-              '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.1)', borderRadius: '4px' },
+              '&::-webkit-scrollbar-thumb': { bgcolor: '#cbd5e1', borderRadius: '4px' },
             }}
           >
             {filteredBlocks.length === 0 ? (
@@ -583,27 +590,23 @@ export const DivisionalControlCockpit: React.FC = () => {
                     }}
                     sx={{
                       p: 1.2,
-                      borderRadius: 2,
+                      borderRadius: 1.8,
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
-                      border: isSelected
-                        ? '1.5px solid #10b981'
-                        : '1px solid rgba(255, 255, 255, 0.08)',
+                      border: isSelected ? '1.5px solid #0f2b5c' : '1px solid #e2e8f0',
                       borderLeft: `4px solid ${
                         b.status === 'FIT_RESTORED'
-                          ? '#10b981'
+                          ? '#059669'
                           : isSuper
-                          ? '#f59e0b'
-                          : '#3b82f6'
+                          ? '#d97706'
+                          : '#2563eb'
                       }`,
-                      bgcolor: isSelected
-                        ? 'rgba(16, 185, 129, 0.08)'
-                        : 'rgba(15, 23, 42, 0.75)',
+                      bgcolor: isSelected ? '#eff6ff' : '#ffffff',
                       boxShadow: isSelected
-                        ? '0 0 15px rgba(16, 185, 129, 0.25)'
-                        : '0 2px 8px rgba(0,0,0,0.3)',
+                        ? '0 2px 8px rgba(15, 43, 92, 0.12)'
+                        : '0 1px 2px rgba(0,0,0,0.03)',
                       '&:hover': {
-                        border: isSelected ? '1.5px solid #10b981' : '1px solid rgba(255, 255, 255, 0.18)',
+                        border: isSelected ? '1.5px solid #0f2b5c' : '1px solid #cbd5e1',
                         transform: 'translateX(2px)',
                       },
                     }}
@@ -616,7 +619,7 @@ export const DivisionalControlCockpit: React.FC = () => {
                           sx={{
                             fontFamily: '"JetBrains Mono", monospace',
                             fontWeight: 800,
-                            color: isSelected ? '#34d399' : '#f8fafc',
+                            color: isSelected ? '#0f2b5c' : '#1e293b',
                             fontSize: '0.8rem',
                           }}
                         >
@@ -629,10 +632,10 @@ export const DivisionalControlCockpit: React.FC = () => {
                             sx={{
                               height: 16,
                               fontSize: '0.58rem',
-                              fontWeight: 900,
-                              bgcolor: 'rgba(245, 158, 11, 0.15)',
-                              color: '#fbbf24',
-                              border: '1px solid rgba(245, 158, 11, 0.4)',
+                              fontWeight: 800,
+                              bgcolor: '#fffbeb',
+                              color: '#b45309',
+                              border: '1px solid #fde68a',
                             }}
                           />
                         )}
@@ -643,39 +646,39 @@ export const DivisionalControlCockpit: React.FC = () => {
                         sx={{
                           height: 17,
                           fontSize: '0.62rem',
-                          fontWeight: 800,
+                          fontWeight: 700,
                           bgcolor:
                             b.status === 'FIT_RESTORED'
-                              ? 'rgba(16, 185, 129, 0.15)'
+                              ? '#ecfdf5'
                               : b.status === 'SANCTIONED'
-                              ? 'rgba(59, 130, 246, 0.15)'
-                              : 'rgba(148, 163, 184, 0.1)',
+                              ? '#eff6ff'
+                              : '#f1f5f9',
                           color:
                             b.status === 'FIT_RESTORED'
-                              ? '#34d399'
+                              ? '#047857'
                               : b.status === 'SANCTIONED'
-                              ? '#60a5fa'
-                              : '#94a3b8',
+                              ? '#1e40af'
+                              : '#475569',
                           border:
                             b.status === 'FIT_RESTORED'
-                              ? '1px solid rgba(16, 185, 129, 0.3)'
+                              ? '1px solid #a7f3d0'
                               : b.status === 'SANCTIONED'
-                              ? '1px solid rgba(59, 130, 246, 0.3)'
-                              : '1px solid rgba(148, 163, 184, 0.2)',
+                              ? '1px solid #bfdbfe'
+                              : '1px solid #cbd5e1',
                         }}
                       />
                     </Box>
 
                     {/* Card Middle: Section & Duration */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.6 }}>
-                      <Typography variant="caption" sx={{ color: '#cbd5e1', fontSize: '0.72rem', fontWeight: 600 }}>
+                      <Typography variant="caption" sx={{ color: '#334155', fontSize: '0.72rem', fontWeight: 600 }}>
                         {b.section_id}
                       </Typography>
                       <Typography
                         variant="caption"
                         sx={{
                           fontFamily: '"JetBrains Mono", monospace',
-                          color: '#22d3ee',
+                          color: '#0284c7',
                           fontSize: '0.72rem',
                           fontWeight: 700,
                         }}
@@ -688,8 +691,8 @@ export const DivisionalControlCockpit: React.FC = () => {
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
                         {tasks.slice(0, 3).map((t: any, idx: number) => {
-                          const deptColor =
-                            t.department === 'TMS' ? '#10b981' : t.department === 'SMMS' ? '#f59e0b' : '#06b6d4';
+                          const isTms = t.department === 'TMS';
+                          const isSmms = t.department === 'SMMS';
                           return (
                             <Chip
                               key={idx}
@@ -699,9 +702,9 @@ export const DivisionalControlCockpit: React.FC = () => {
                                 height: 16,
                                 fontSize: '0.58rem',
                                 fontWeight: 800,
-                                bgcolor: `${deptColor}15`,
-                                color: deptColor,
-                                border: `1px solid ${deptColor}30`,
+                                bgcolor: isTms ? '#ecfdf5' : isSmms ? '#fffbeb' : '#ecfeff',
+                                color: isTms ? '#047857' : isSmms ? '#b45309' : '#0e7490',
+                                border: `1px solid ${isTms ? '#a7f3d0' : isSmms ? '#fde68a' : '#a5f3fc'}`,
                               }}
                             />
                           );
@@ -730,11 +733,11 @@ export const DivisionalControlCockpit: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            borderRight: '1px solid rgba(255, 255, 255, 0.08)',
-            bgcolor: '#050811',
+            borderRight: '1px solid #e2e8f0',
+            bgcolor: '#ffffff',
           }}
         >
-          {/* Canvas Sub-Header */}
+          {/* Canvas Sub-Header with 3 View Switchers */}
           <Box
             sx={{
               height: 42,
@@ -743,30 +746,35 @@ export const DivisionalControlCockpit: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'space-between',
               px: 2,
-              borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-              bgcolor: 'rgba(15, 23, 42, 0.6)',
+              borderBottom: '1px solid #e2e8f0',
+              bgcolor: '#f8fafc',
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography
                 variant="caption"
                 sx={{
-                  fontWeight: 900,
-                  letterSpacing: '0.04em',
-                  color: '#60a5fa',
+                  fontWeight: 800,
+                  letterSpacing: '0.03em',
+                  color: '#0f2b5c',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 0.6,
                 }}
               >
-                {viewMode === 'gis' ? (
+                {viewMode === 'timeline' ? (
                   <>
-                    <MapIcon sx={{ fontSize: 15 }} />
-                    GIS TRACK TOPOLOGY • DIRECTIONAL UP/DOWN MAIN LINES
+                    <TimelineIcon sx={{ fontSize: 16, color: '#0284c7' }} />
+                    COA TIME-DISTANCE STRING CHART (24H TRAFFIC TIMETABLE)
+                  </>
+                ) : viewMode === 'gis' ? (
+                  <>
+                    <MapIcon sx={{ fontSize: 16, color: '#059669' }} />
+                    GIS TRACK TOPOLOGY (UP/DOWN MAIN LINES)
                   </>
                 ) : (
                   <>
-                    <AccountTreeIcon sx={{ fontSize: 15 }} />
+                    <AccountTreeIcon sx={{ fontSize: 16, color: '#d97706' }} />
                     JUNCTION INTERLOCKING & SIGNAL ENVELOPE ({schematicStation})
                   </>
                 )}
@@ -779,9 +787,9 @@ export const DivisionalControlCockpit: React.FC = () => {
                     height: 18,
                     fontSize: '0.62rem',
                     fontWeight: 700,
-                    bgcolor: 'rgba(16, 185, 129, 0.15)',
-                    color: '#34d399',
-                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    bgcolor: '#ecfdf5',
+                    color: '#047857',
+                    border: '1px solid #a7f3d0',
                   }}
                 />
               )}
@@ -797,14 +805,27 @@ export const DivisionalControlCockpit: React.FC = () => {
                 sx={{ height: 26 }}
               >
                 <ToggleButton
-                  value="gis"
+                  value="timeline"
                   sx={{
-                    fontWeight: 800,
+                    fontWeight: 700,
                     px: 1.2,
                     fontSize: '0.68rem',
-                    color: '#94a3b8',
-                    borderColor: 'rgba(255,255,255,0.1)',
-                    '&.Mui-selected': { bgcolor: 'rgba(59, 130, 246, 0.25)', color: '#60a5fa' },
+                    color: '#475569',
+                    borderColor: '#cbd5e1',
+                    '&.Mui-selected': { bgcolor: '#0f2b5c', color: '#ffffff' },
+                  }}
+                >
+                  STRING CHART
+                </ToggleButton>
+                <ToggleButton
+                  value="gis"
+                  sx={{
+                    fontWeight: 700,
+                    px: 1.2,
+                    fontSize: '0.68rem',
+                    color: '#475569',
+                    borderColor: '#cbd5e1',
+                    '&.Mui-selected': { bgcolor: '#0f2b5c', color: '#ffffff' },
                   }}
                 >
                   GIS MAP
@@ -812,15 +833,15 @@ export const DivisionalControlCockpit: React.FC = () => {
                 <ToggleButton
                   value="schematic"
                   sx={{
-                    fontWeight: 800,
+                    fontWeight: 700,
                     px: 1.2,
                     fontSize: '0.68rem',
-                    color: '#94a3b8',
-                    borderColor: 'rgba(255,255,255,0.1)',
-                    '&.Mui-selected': { bgcolor: 'rgba(59, 130, 246, 0.25)', color: '#60a5fa' },
+                    color: '#475569',
+                    borderColor: '#cbd5e1',
+                    '&.Mui-selected': { bgcolor: '#0f2b5c', color: '#ffffff' },
                   }}
                 >
-                  YARD SCHEMATIC
+                  YARD
                 </ToggleButton>
               </ToggleButtonGroup>
 
@@ -835,12 +856,12 @@ export const DivisionalControlCockpit: React.FC = () => {
                   <ToggleButton
                     value="GZB"
                     sx={{
-                      fontWeight: 800,
+                      fontWeight: 700,
                       px: 1,
                       fontSize: '0.68rem',
-                      color: '#94a3b8',
-                      borderColor: 'rgba(255,255,255,0.1)',
-                      '&.Mui-selected': { bgcolor: 'rgba(245, 158, 11, 0.25)', color: '#fbbf24' },
+                      color: '#475569',
+                      borderColor: '#cbd5e1',
+                      '&.Mui-selected': { bgcolor: '#d97706', color: '#ffffff' },
                     }}
                   >
                     GZB
@@ -848,12 +869,12 @@ export const DivisionalControlCockpit: React.FC = () => {
                   <ToggleButton
                     value="ALJN"
                     sx={{
-                      fontWeight: 800,
+                      fontWeight: 700,
                       px: 1,
                       fontSize: '0.68rem',
-                      color: '#94a3b8',
-                      borderColor: 'rgba(255,255,255,0.1)',
-                      '&.Mui-selected': { bgcolor: 'rgba(245, 158, 11, 0.25)', color: '#fbbf24' },
+                      color: '#475569',
+                      borderColor: '#cbd5e1',
+                      '&.Mui-selected': { bgcolor: '#d97706', color: '#ffffff' },
                     }}
                   >
                     ALJN
@@ -864,8 +885,14 @@ export const DivisionalControlCockpit: React.FC = () => {
           </Box>
 
           {/* Canvas Viewport Body */}
-          <Box sx={{ flexGrow: 1, position: 'relative', overflow: 'hidden' }}>
-            {viewMode === 'gis' ? (
+          <Box sx={{ flexGrow: 1, position: 'relative', overflow: 'hidden', p: 1, bgcolor: '#f8fafc' }}>
+            {viewMode === 'timeline' ? (
+              <CorridorStringChart
+                selectedBlock={selectedBlock}
+                onSelectBlock={(b) => setSelectedBlock(b)}
+                blocks={blocks}
+              />
+            ) : viewMode === 'gis' ? (
               <CorridorMap
                 stations={stations}
                 sections={sections}
@@ -886,7 +913,9 @@ export const DivisionalControlCockpit: React.FC = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   p: 2,
-                  bgcolor: '#070c18',
+                  bgcolor: '#ffffff',
+                  borderRadius: 2,
+                  border: '1px solid #cbd5e1',
                   overflowY: 'auto',
                 }}
               >
@@ -901,8 +930,8 @@ export const DivisionalControlCockpit: React.FC = () => {
                       mt: 2,
                       p: 1.5,
                       borderRadius: 2,
-                      bgcolor: 'rgba(245, 158, 11, 0.08)',
-                      border: '1px solid rgba(245, 158, 11, 0.3)',
+                      bgcolor: '#fef2f2',
+                      border: '1px solid #fecaca',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 1.5,
@@ -913,15 +942,15 @@ export const DivisionalControlCockpit: React.FC = () => {
                         width: 10,
                         height: 10,
                         borderRadius: '50%',
-                        bgcolor: '#ef4444',
-                        boxShadow: '0 0 10px #ef4444',
+                        bgcolor: '#dc2626',
+                        boxShadow: '0 0 8px #dc2626',
                       }}
                     />
                     <Box>
-                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#fbbf24', display: 'block' }}>
+                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#b91c1c', display: 'block' }}>
                         AUTOMATIC RED ENVELOPE LOCKED — {selectedBlock.block_id}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: '#cbd5e1', fontSize: '0.72rem' }}>
+                      <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.72rem' }}>
                         Signals holding absolute stop under G&SR 2026. Point machines locked to prevent routing into possession zone on {selectedBlock.section_id}.
                       </Typography>
                     </Box>
@@ -939,7 +968,7 @@ export const DivisionalControlCockpit: React.FC = () => {
             minWidth: 330,
             maxWidth: 420,
             flexShrink: 0,
-            bgcolor: 'rgba(11, 15, 25, 0.75)',
+            bgcolor: '#ffffff',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -954,11 +983,11 @@ export const DivisionalControlCockpit: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-              bgcolor: 'rgba(15, 23, 42, 0.6)',
+              borderBottom: '1px solid #e2e8f0',
+              bgcolor: '#f8fafc',
             }}
           >
-            <Typography variant="caption" sx={{ fontWeight: 900, letterSpacing: '0.05em', color: '#94a3b8' }}>
+            <Typography variant="caption" sx={{ fontWeight: 800, letterSpacing: '0.04em', color: '#0f2b5c' }}>
               TACTICAL INSPECTOR
             </Typography>
             {selectedBlock && (
@@ -970,9 +999,9 @@ export const DivisionalControlCockpit: React.FC = () => {
                   fontSize: '0.7rem',
                   fontWeight: 800,
                   fontFamily: '"JetBrains Mono", monospace',
-                  bgcolor: 'rgba(16, 185, 129, 0.15)',
-                  color: '#34d399',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  bgcolor: '#eff6ff',
+                  color: '#1e40af',
+                  border: '1px solid #bfdbfe',
                 }}
               />
             )}
@@ -987,8 +1016,9 @@ export const DivisionalControlCockpit: React.FC = () => {
               display: 'flex',
               flexDirection: 'column',
               gap: 2,
+              bgcolor: '#f8fafc',
               '&::-webkit-scrollbar': { width: '4px' },
-              '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.1)', borderRadius: '4px' },
+              '&::-webkit-scrollbar-thumb': { bgcolor: '#cbd5e1', borderRadius: '4px' },
             }}
           >
             {!selectedBlock ? (
@@ -1003,12 +1033,12 @@ export const DivisionalControlCockpit: React.FC = () => {
                   p: 3,
                 }}
               >
-                <FlashOnIcon sx={{ fontSize: 48, color: '#334155', mb: 2 }} />
-                <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#94a3b8', mb: 1 }}>
+                <FlashOnIcon sx={{ fontSize: 44, color: '#94a3b8', mb: 2 }} />
+                <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#0f2b5c', mb: 1 }}>
                   No Possession Selected
                 </Typography>
                 <Typography variant="caption" sx={{ color: '#64748b', maxWidth: 260 }}>
-                  Click any possession block from the left queue or tap a section node on the GIS map to inspect AI trade-offs and execute safety handshakes.
+                  Click any possession block from the queue or tap a section node on the string chart to inspect live operational parameters and execute handshakes.
                 </Typography>
               </Box>
             ) : (
@@ -1018,12 +1048,13 @@ export const DivisionalControlCockpit: React.FC = () => {
                   sx={{
                     p: 1.5,
                     borderRadius: 2,
-                    bgcolor: 'rgba(15, 23, 42, 0.85)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    bgcolor: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
                   }}
                 >
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>
+                    <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 700 }}>
                       SECTION & CORRIDOR
                     </Typography>
                     <Chip
@@ -1033,13 +1064,14 @@ export const DivisionalControlCockpit: React.FC = () => {
                         height: 18,
                         fontSize: '0.62rem',
                         fontWeight: 800,
-                        bgcolor: selectedBlock.is_combined ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.15)',
-                        color: selectedBlock.is_combined ? '#fbbf24' : '#60a5fa',
+                        bgcolor: selectedBlock.is_combined ? '#fffbeb' : '#eff6ff',
+                        color: selectedBlock.is_combined ? '#b45309' : '#1e40af',
+                        border: selectedBlock.is_combined ? '1px solid #fde68a' : '1px solid #bfdbfe',
                       }}
                     />
                   </Box>
 
-                  <Typography variant="body2" sx={{ fontWeight: 800, color: '#f8fafc', mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 800, color: '#0f2b5c', mb: 0.5 }}>
                     {selectedBlock.section_id}
                   </Typography>
 
@@ -1048,7 +1080,7 @@ export const DivisionalControlCockpit: React.FC = () => {
                       <Typography variant="caption" sx={{ color: '#64748b', display: 'block', fontSize: '0.68rem' }}>
                         Duration
                       </Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#22d3ee', fontFamily: '"JetBrains Mono", monospace' }}>
+                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#0284c7', fontFamily: '"JetBrains Mono", monospace' }}>
                         {selectedBlock.duration_minutes || selectedBlock.total_duration_minutes} Mins
                       </Typography>
                     </Box>
@@ -1056,7 +1088,7 @@ export const DivisionalControlCockpit: React.FC = () => {
                       <Typography variant="caption" sx={{ color: '#64748b', display: 'block', fontSize: '0.68rem' }}>
                         G&SR Status
                       </Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#10b981' }}>
+                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#059669' }}>
                         {selectedBlock.status === 'FIT_RESTORED' ? 'Fit Restored' : 'Form T/351 Ready'}
                       </Typography>
                     </Box>
@@ -1064,32 +1096,31 @@ export const DivisionalControlCockpit: React.FC = () => {
                       <Typography variant="caption" sx={{ color: '#64748b', display: 'block', fontSize: '0.68rem' }}>
                         Bundled Work
                       </Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#fbbf24' }}>
+                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#d97706' }}>
                         {selectedTasks.length || 1} Departments
                       </Typography>
                     </Box>
                   </Box>
                 </Box>
 
-                {/* AI Reasoner & Operational Trade-Off Card (Linear style) */}
+                {/* AI Reasoner & Operational Trade-Off Card */}
                 <Box
                   sx={{
                     p: 1.5,
                     borderRadius: 2,
-                    bgcolor: 'rgba(59, 130, 246, 0.05)',
-                    border: '1px solid rgba(59, 130, 246, 0.25)',
+                    bgcolor: '#eff6ff',
+                    border: '1px solid #bfdbfe',
                     position: 'relative',
-                    overflow: 'hidden',
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mb: 1 }}>
-                    <PsychologyIcon sx={{ fontSize: 18, color: '#60a5fa' }} />
-                    <Typography variant="caption" sx={{ fontWeight: 900, color: '#93c5fd', letterSpacing: '0.02em' }}>
+                    <PsychologyIcon sx={{ fontSize: 18, color: '#1e40af' }} />
+                    <Typography variant="caption" sx={{ fontWeight: 800, color: '#1e3a8a', letterSpacing: '0.02em' }}>
                       AI REASONER & CORRIDOR TRADE-OFF
                     </Typography>
                   </Box>
 
-                  <Typography variant="caption" sx={{ color: '#cbd5e1', display: 'block', mb: 1.2, lineHeight: 1.45 }}>
+                  <Typography variant="caption" sx={{ color: '#1e293b', display: 'block', mb: 1.2, lineHeight: 1.45 }}>
                     {selectedBlock.explanation?.summary ||
                       `CP-SAT Solver scheduled this slot during optimal freight headway window to eliminate passenger timetable conflicts on ${selectedBlock.section_id}.`}
                   </Typography>
@@ -1098,43 +1129,178 @@ export const DivisionalControlCockpit: React.FC = () => {
                     sx={{
                       p: 1,
                       borderRadius: 1.5,
-                      bgcolor: 'rgba(245, 158, 11, 0.08)',
-                      border: '1px solid rgba(245, 158, 11, 0.25)',
+                      bgcolor: '#ffffff',
+                      border: '1px solid #93c5fd',
                     }}
                   >
-                    <Typography variant="caption" sx={{ color: '#fde047', fontWeight: 700, display: 'block', fontSize: '0.72rem' }}>
+                    <Typography variant="caption" sx={{ color: '#b45309', fontWeight: 700, display: 'block', fontSize: '0.72rem' }}>
                       Operational Trade-off:
                     </Typography>
-                    <Typography variant="caption" sx={{ color: '#fef08a', fontSize: '0.7rem', display: 'block', mt: 0.2 }}>
+                    <Typography variant="caption" sx={{ color: '#334155', fontSize: '0.7rem', display: 'block', mt: 0.2 }}>
                       {selectedBlock.explanation?.tradeoff ||
                         'Zero Vande Bharat (22436) / Rajdhani delays. Freight rake 4122 routed to ALJN loop line.'}
                     </Typography>
                   </Box>
                 </Box>
 
+                {/* ── REAL-LIFE FEATURE: Train Conflict & Regulation Matrix ── */}
+                <Box
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2,
+                    bgcolor: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+                      <DirectionsTransitIcon sx={{ fontSize: 16, color: '#0f2b5c' }} />
+                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#0f2b5c' }}>
+                        TRAIN CONFLICT & REGULATION MATRIX
+                      </Typography>
+                    </Box>
+                    <Chip label="Section Impact" size="small" sx={{ height: 17, fontSize: '0.6rem', bgcolor: '#f1f5f9', color: '#475569' }} />
+                  </Box>
+
+                  <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #e2e8f0', borderRadius: 1.5 }}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell sx={{ py: 0.5, fontSize: '0.68rem', fontWeight: 700 }}>Train</TableCell>
+                          <TableCell sx={{ py: 0.5, fontSize: '0.68rem', fontWeight: 700 }}>ETA</TableCell>
+                          <TableCell sx={{ py: 0.5, fontSize: '0.68rem', fontWeight: 700 }}>Regulation Action</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell sx={{ py: 0.6, fontSize: '0.7rem', fontFamily: '"JetBrains Mono", monospace', fontWeight: 700, color: '#0284c7' }}>
+                            22436 VB
+                          </TableCell>
+                          <TableCell sx={{ py: 0.6, fontSize: '0.68rem' }}>07:42</TableCell>
+                          <TableCell sx={{ py: 0.6, fontSize: '0.68rem', color: '#059669', fontWeight: 700 }}>
+                            Green Path (Clear)
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell sx={{ py: 0.6, fontSize: '0.7rem', fontFamily: '"JetBrains Mono", monospace', fontWeight: 700, color: '#7c3aed' }}>
+                            12004 LKO
+                          </TableCell>
+                          <TableCell sx={{ py: 0.6, fontSize: '0.68rem' }}>08:15</TableCell>
+                          <TableCell sx={{ py: 0.6, fontSize: '0.68rem', color: '#059669', fontWeight: 700 }}>
+                            Alternate Line (0m)
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell sx={{ py: 0.6, fontSize: '0.7rem', fontFamily: '"JetBrains Mono", monospace', fontWeight: 700, color: '#059669' }}>
+                            BOXN-4122
+                          </TableCell>
+                          <TableCell sx={{ py: 0.6, fontSize: '0.68rem' }}>09:10</TableCell>
+                          <TableCell sx={{ py: 0.6, fontSize: '0.68rem' }}>
+                            {regulatedTrain === 'BOXN' ? (
+                              <Chip
+                                icon={<CheckCircleIcon sx={{ fontSize: '11px !important', color: '#059669 !important' }} />}
+                                label="Loop Line Regulated"
+                                size="small"
+                                sx={{ height: 18, fontSize: '0.6rem', bgcolor: '#ecfdf5', color: '#047857' }}
+                              />
+                            ) : (
+                              <Button
+                                size="small"
+                                onClick={() => {
+                                  setRegulatedTrain('BOXN');
+                                  setToastMessage('✅ Freight BOXN-4122 diverted to ALJN Loop 2. 0m Passenger delay.');
+                                }}
+                                sx={{ height: 18, fontSize: '0.6rem', p: 0.5, bgcolor: '#fef3c7', color: '#b45309' }}
+                              >
+                                Regulate at Loop
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Box>
+
+                {/* ── REAL-LIFE FEATURE: Track Machine & Gang Allocation ── */}
+                <Box
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2,
+                    bgcolor: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+                      <ConstructionIcon sx={{ fontSize: 16, color: '#d97706' }} />
+                      <Typography variant="caption" sx={{ fontWeight: 800, color: '#0f2b5c' }}>
+                        TRACK MACHINE & GANG ROSTER
+                      </Typography>
+                    </Box>
+                    <Chip label="Active Deployment" size="small" sx={{ height: 17, fontSize: '0.6rem', bgcolor: '#fffbeb', color: '#b45309' }} />
+                  </Box>
+
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 0.8, bgcolor: '#f8fafc', borderRadius: 1.5, border: '1px solid #e2e8f0' }}>
+                      <Box>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: '#0f2b5c', display: 'block' }}>
+                          BCM-341 (Ballast Cleaning Machine)
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.66rem' }}>
+                          Staged at GZB Siding 3 • Transit Clearance OK
+                        </Typography>
+                      </Box>
+                      <Chip label="Ready" size="small" sx={{ height: 18, fontSize: '0.62rem', bgcolor: '#ecfdf5', color: '#059669', fontWeight: 700 }} />
+                    </Box>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 0.8, bgcolor: '#f8fafc', borderRadius: 1.5, border: '1px solid #e2e8f0' }}>
+                      <Box>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: '#0f2b5c', display: 'block' }}>
+                          Tower Wagon TW-14 (OHE Isolator)
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.66rem' }}>
+                          TPC Power Block Approved • ALJN Depot
+                        </Typography>
+                      </Box>
+                      <Chip label="Allocated" size="small" sx={{ height: 18, fontSize: '0.62rem', bgcolor: '#eff6ff', color: '#1e40af', fontWeight: 700 }} />
+                    </Box>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, p: 0.8, bgcolor: '#f1f5f9', borderRadius: 1.5 }}>
+                      <EngineeringIcon sx={{ fontSize: 16, color: '#475569' }} />
+                      <Typography variant="caption" sx={{ color: '#334155', fontSize: '0.68rem', fontWeight: 600 }}>
+                        In-Charge: <strong>SSE/P-Way/ALJN Shri R.K. Sharma</strong> • 24 Trackmen Muster Roster
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+
                 {/* Bundled Requisitions List */}
                 <Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Typography variant="caption" sx={{ fontWeight: 900, color: '#94a3b8', letterSpacing: '0.04em' }}>
+                    <Typography variant="caption" sx={{ fontWeight: 800, color: '#0f2b5c', letterSpacing: '0.03em' }}>
                       BUNDLED REQUISITIONS ({selectedTasks.length})
                     </Typography>
                     <Typography variant="caption" sx={{ fontSize: '0.65rem', color: '#64748b' }}>
-                      Multi-Department Pack
+                      Joint Maintenance Pack
                     </Typography>
                   </Box>
 
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     {selectedTasks.map((t: any, idx: number) => {
-                      const deptColor =
-                        t.department === 'TMS' ? '#10b981' : t.department === 'SMMS' ? '#f59e0b' : '#06b6d4';
+                      const isTms = t.department === 'TMS';
+                      const isSmms = t.department === 'SMMS';
                       return (
                         <Box
                           key={t.request_id || idx}
                           sx={{
                             p: 1.2,
                             borderRadius: 1.8,
-                            bgcolor: 'rgba(15, 23, 42, 0.8)',
-                            border: '1px solid rgba(255, 255, 255, 0.06)',
+                            bgcolor: '#ffffff',
+                            border: '1px solid #e2e8f0',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
                           }}
                         >
                           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
@@ -1145,17 +1311,17 @@ export const DivisionalControlCockpit: React.FC = () => {
                                 sx={{
                                   height: 18,
                                   fontSize: '0.62rem',
-                                  fontWeight: 900,
-                                  bgcolor: `${deptColor}15`,
-                                  color: deptColor,
-                                  border: `1px solid ${deptColor}35`,
+                                  fontWeight: 800,
+                                  bgcolor: isTms ? '#ecfdf5' : isSmms ? '#fffbeb' : '#ecfeff',
+                                  color: isTms ? '#047857' : isSmms ? '#b45309' : '#0e7490',
+                                  border: `1px solid ${isTms ? '#a7f3d0' : isSmms ? '#fde68a' : '#a5f3fc'}`,
                                 }}
                               />
                               <Typography
                                 variant="caption"
                                 sx={{
                                   fontFamily: '"JetBrains Mono", monospace',
-                                  color: '#cbd5e1',
+                                  color: '#0f2b5c',
                                   fontWeight: 700,
                                   fontSize: '0.72rem',
                                 }}
@@ -1172,13 +1338,13 @@ export const DivisionalControlCockpit: React.FC = () => {
                                 sx={{
                                   height: 22,
                                   fontSize: '0.64rem',
-                                  fontWeight: 800,
+                                  fontWeight: 700,
                                   py: 0.2,
                                   px: 0.8,
-                                  bgcolor: 'rgba(168, 85, 247, 0.1)',
-                                  color: '#c084fc',
-                                  border: '1px solid rgba(168, 85, 247, 0.3)',
-                                  '&:hover': { bgcolor: 'rgba(168, 85, 247, 0.2)' },
+                                  bgcolor: '#f5f3ff',
+                                  color: '#7c3aed',
+                                  border: '1px solid #ddd6fe',
+                                  '&:hover': { bgcolor: '#ede9fe' },
                                 }}
                               >
                                 Explain Risk
@@ -1186,7 +1352,7 @@ export const DivisionalControlCockpit: React.FC = () => {
                             </Tooltip>
                           </Box>
 
-                          <Typography variant="body2" sx={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.78rem', mb: 0.4 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 700, color: '#1e293b', fontSize: '0.78rem', mb: 0.4 }}>
                             {t.defect_type}
                           </Typography>
 
@@ -1204,9 +1370,9 @@ export const DivisionalControlCockpit: React.FC = () => {
                                 sx={{
                                   height: 16,
                                   fontSize: '0.6rem',
-                                  fontWeight: 900,
-                                  bgcolor: t.priority_score > 85 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                                  color: t.priority_score > 85 ? '#f87171' : '#fbbf24',
+                                  fontWeight: 800,
+                                  bgcolor: t.priority_score > 85 ? '#fef2f2' : '#fffbeb',
+                                  color: t.priority_score > 85 ? '#dc2626' : '#d97706',
                                 }}
                               />
                             </Box>
@@ -1224,9 +1390,8 @@ export const DivisionalControlCockpit: React.FC = () => {
           <Box
             sx={{
               p: 1.5,
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-              bgcolor: 'rgba(11, 15, 25, 0.95)',
-              backdropFilter: 'blur(12px)',
+              borderTop: '1px solid #e2e8f0',
+              bgcolor: '#ffffff',
             }}
           >
             <Button
@@ -1238,14 +1403,15 @@ export const DivisionalControlCockpit: React.FC = () => {
               sx={{
                 py: 1.1,
                 borderRadius: 2,
-                fontWeight: 900,
+                fontWeight: 800,
                 fontSize: '0.82rem',
                 letterSpacing: '0.02em',
-                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                boxShadow: '0 0 20px rgba(37, 99, 235, 0.4)',
+                bgcolor: '#0f2b5c',
+                color: '#ffffff',
+                boxShadow: '0 2px 8px rgba(15, 43, 92, 0.25)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                  boxShadow: '0 0 25px rgba(37, 99, 235, 0.6)',
+                  bgcolor: '#1e3a8a',
+                  boxShadow: '0 4px 12px rgba(15, 43, 92, 0.35)',
                 },
               }}
             >

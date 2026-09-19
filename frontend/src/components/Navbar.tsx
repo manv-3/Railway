@@ -32,10 +32,9 @@ export const Navbar: React.FC = () => {
     <AppBar
       position="sticky"
       sx={{
-        bgcolor: 'rgba(10, 15, 26, 0.95)',
-        backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.6)',
+        bgcolor: '#0f2b5c',
+        borderBottom: '2px solid #1e3a8a',
+        boxShadow: '0 2px 8px rgba(15, 43, 92, 0.25)',
       }}
     >
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', px: { xs: 1.5, md: 3 }, py: 0.5 }}>
@@ -43,22 +42,22 @@ export const Navbar: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.8 }}>
           <Box
             sx={{
-              width: 40,
-              height: 40,
-              borderRadius: 2.5,
-              bgcolor: 'rgba(59, 130, 246, 0.15)',
-              border: '1px solid rgba(59, 130, 246, 0.35)',
+              width: 38,
+              height: 38,
+              borderRadius: 2,
+              bgcolor: 'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 15px rgba(59, 130, 246, 0.2)',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
             }}
           >
-            <TrainIcon sx={{ fontSize: 24, color: '#60a5fa' }} />
+            <TrainIcon sx={{ fontSize: 24, color: '#ffffff' }} />
           </Box>
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 800, letterSpacing: '0.02em', color: '#f8fafc', lineHeight: 1.2 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, letterSpacing: '0.02em', color: '#ffffff', lineHeight: 1.2 }}>
                 INDIAN RAILWAYS
               </Typography>
               <Chip
@@ -68,13 +67,13 @@ export const Navbar: React.FC = () => {
                   height: 18,
                   fontSize: '0.62rem',
                   fontWeight: 800,
-                  bgcolor: 'rgba(6, 182, 212, 0.15)',
-                  border: '1px solid rgba(6, 182, 212, 0.35)',
-                  color: '#22d3ee',
+                  bgcolor: 'rgba(255, 255, 255, 0.18)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  color: '#ffffff',
                 }}
               />
             </Box>
-            <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.72rem', display: 'block' }}>
+            <Typography variant="caption" sx={{ color: '#93c5fd', fontSize: '0.72rem', display: 'block' }}>
               Golden Corridor • New Delhi (NDLS) → Kanpur (CNB)
             </Typography>
           </Box>
@@ -88,11 +87,11 @@ export const Navbar: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               gap: 1.5,
-              px: 2,
-              py: 0.6,
+              px: 1.8,
+              py: 0.5,
               borderRadius: 20,
-              bgcolor: 'rgba(15, 23, 42, 0.6)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              bgcolor: 'rgba(0, 0, 0, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
@@ -101,56 +100,54 @@ export const Navbar: React.FC = () => {
                   width: 7,
                   height: 7,
                   borderRadius: '50%',
-                  bgcolor: '#10b981',
-                  boxShadow: '0 0 8px #10b981',
+                  bgcolor: '#34d399',
+                  boxShadow: '0 0 8px #34d399',
                   animation: 'pulse-live 1.8s infinite',
                 }}
               />
-              <Typography variant="caption" sx={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '0.7rem', color: '#34d399', fontWeight: 700 }}>
+              <Typography variant="caption" sx={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '0.7rem', color: '#6ee7b7', fontWeight: 700 }}>
                 WS LIVE
               </Typography>
             </Box>
 
-            <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.2)' }}>|</Typography>
+            <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.3)' }}>|</Typography>
 
-            <Typography variant="caption" sx={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '0.7rem', color: '#94a3b8' }}>
-              TRAINS: <span style={{ color: '#60a5fa', fontWeight: 700 }}>58 ACTIVE</span>
+            <Typography variant="caption" sx={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '0.7rem', color: '#e2e8f0' }}>
+              TRAINS: <span style={{ color: '#93c5fd', fontWeight: 700 }}>58 ACTIVE</span>
             </Typography>
 
-            <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.2)' }}>|</Typography>
+            <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.3)' }}>|</Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <ShieldIcon sx={{ fontSize: 13, color: '#f59e0b' }} />
-              <Typography variant="caption" sx={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '0.7rem', color: '#fbbf24', fontWeight: 700 }}>
-                KAVACH TCAS
+              <ShieldIcon sx={{ fontSize: 13, color: '#fbbf24' }} />
+              <Typography variant="caption" sx={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '0.7rem', color: '#fde047', fontWeight: 700 }}>
+                KAVACH TCAS L2
               </Typography>
             </Box>
           </Box>
 
           {/* Navigation Links */}
-          <Box sx={{ display: 'flex', gap: 0.8 }}>
+          <Box sx={{ display: 'flex', gap: 0.6 }}>
             {visibleNavItems.map((item) => {
               const isActive = location.pathname.startsWith(item.path);
               return (
                 <Button
                   key={item.path}
                   onClick={() => navigate(item.path)}
-                  variant={isActive ? 'contained' : 'text'}
                   size="small"
                   sx={{
-                    px: 1.8,
-                    py: 0.7,
-                    borderRadius: 2,
-                    fontSize: '0.8rem',
+                    px: 1.6,
+                    py: 0.6,
+                    borderRadius: 1.5,
+                    fontSize: '0.78rem',
                     fontWeight: 700,
                     textTransform: 'none',
-                    bgcolor: isActive ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
-                    border: isActive ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid transparent',
-                    color: isActive ? '#60a5fa' : '#94a3b8',
-                    boxShadow: isActive ? '0 0 15px rgba(59, 130, 246, 0.25)' : 'none',
+                    bgcolor: isActive ? '#ffffff' : 'transparent',
+                    color: isActive ? '#0f2b5c' : '#cbd5e1',
+                    boxShadow: isActive ? '0 2px 6px rgba(0,0,0,0.2)' : 'none',
                     '&:hover': {
-                      bgcolor: 'rgba(59, 130, 246, 0.1)',
-                      color: '#f8fafc',
+                      bgcolor: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.1)',
+                      color: '#ffffff',
                     },
                   }}
                 >
