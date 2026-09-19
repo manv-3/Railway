@@ -254,11 +254,11 @@ const FormattedMessage: React.FC<{ text: string; isUser: boolean }> = ({ text, i
             variant="body2"
             sx={{
               fontSize: '0.83rem',
-              color: '#334155',
+              color: isUser ? '#ffffff' : '#f1f5f9',
               lineHeight: 1.45,
             }}
           >
-            {renderInlineContent(line, false)}
+            {renderInlineContent(line, isUser)}
           </Typography>
         );
       })}
@@ -421,7 +421,8 @@ export const ChatAssistantWidget: React.FC = () => {
             width: { xs: '100%', sm: 500, md: 540 },
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: '#f8fafc',
+            backgroundColor: '#0a0f1d',
+            borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
           },
         }}
       >
@@ -429,16 +430,17 @@ export const ChatAssistantWidget: React.FC = () => {
         <Box
           sx={{
             p: 2,
-            backgroundColor: '#1a237e',
+            background: 'linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
             color: 'white',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <SmartToyIcon sx={{ color: '#ffab00', fontSize: 30 }} />
+            <SmartToyIcon sx={{ color: '#fbbf24', fontSize: 30 }} />
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.2 }}>
                 Rail Sarthi • Operations Copilot
@@ -517,9 +519,14 @@ export const ChatAssistantWidget: React.FC = () => {
                   p: 1.5,
                   maxWidth: '88%',
                   borderRadius: 2.5,
-                  backgroundColor: msg.sender === 'user' ? '#1a237e' : msg.isError ? '#fff1f2' : '#ffffff',
-                  color: msg.sender === 'user' ? '#ffffff' : msg.isError ? '#9f1239' : '#1e293b',
-                  border: msg.isError ? '1px solid #fecdd3' : '1px solid #e2e8f0',
+                  backgroundColor:
+                    msg.sender === 'user'
+                      ? '#1d4ed8'
+                      : msg.isError
+                      ? 'rgba(239, 68, 68, 0.15)'
+                      : 'rgba(15, 23, 42, 0.95)',
+                  color: msg.sender === 'user' ? '#ffffff' : msg.isError ? '#fca5a5' : '#f1f5f9',
+                  border: msg.isError ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(255, 255, 255, 0.08)',
                 }}
               >
                 <FormattedMessage text={msg.text} isUser={msg.sender === 'user'} />
@@ -614,8 +621,8 @@ export const ChatAssistantWidget: React.FC = () => {
           }}
           sx={{
             p: 1.5,
-            backgroundColor: 'white',
-            borderTop: '1px solid #e2e8f0',
+            backgroundColor: 'rgba(10, 15, 26, 0.95)',
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
             display: 'flex',
             alignItems: 'center',
             gap: 1,
@@ -624,14 +631,15 @@ export const ChatAssistantWidget: React.FC = () => {
           <TextField
             fullWidth
             size="small"
-            placeholder="Ask about blocks, delays, machines..."
+            placeholder="Ask Rail Sarthi about blocks, delays, G&SR..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
             sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: 3,
+                borderRadius: 2.5,
                 fontSize: '0.86rem',
+                backgroundColor: 'rgba(15, 23, 42, 0.8)',
               },
             }}
           />
@@ -640,10 +648,12 @@ export const ChatAssistantWidget: React.FC = () => {
             type="submit"
             disabled={!input.trim() || loading}
             sx={{
-              backgroundColor: '#1a237e',
+              backgroundColor: '#3b82f6',
               color: 'white',
-              '&:hover': { backgroundColor: '#0d47a1' },
-              '&.Mui-disabled': { backgroundColor: '#e2e8f0', color: '#94a3b8' },
+              borderRadius: 2,
+              p: 1,
+              '&:hover': { backgroundColor: '#2563eb' },
+              '&.Mui-disabled': { backgroundColor: 'rgba(255, 255, 255, 0.08)', color: '#64748b' },
             }}
           >
             <SendIcon sx={{ fontSize: 18 }} />

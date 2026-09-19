@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Box, ThemeProvider, createTheme, CssBaseline, LinearProgress } from '@mui/material';
+import { Box, ThemeProvider, CssBaseline, LinearProgress } from '@mui/material';
 
 import { Navbar } from './components/Navbar';
 import { ChatAssistantWidget } from './components/ChatAssistantWidget';
@@ -42,29 +42,14 @@ const ProtectedRoute: React.FC<{
   return <>{children}</>;
 };
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1a237e',
-    },
-    secondary: {
-      main: '#c2185b',
-    },
-    background: {
-      default: '#f4f6f8',
-    },
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-  },
-});
+import { commandTheme } from './theme';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#070b12' }}>
       {!isLoginPage && <Navbar />}
       <Box sx={{ flexGrow: 1 }}>{children}</Box>
       {!isLoginPage && <ChatAssistantWidget />}
@@ -74,7 +59,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 export const App: React.FC = () => {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={commandTheme}>
       <CssBaseline />
       <BrowserRouter>
         <Layout>

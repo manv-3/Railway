@@ -29,52 +29,80 @@ export const SHAPExplainDialog: React.FC<SHAPExplainDialogProps> = ({ open, onCl
   const { risk_score, base_risk, shap_attributions, primary_risk_driver } = data.explanation;
 
   const getRiskColor = (score: number) => {
-    if (score >= 80) return '#d32f2f'; // Red
-    if (score >= 65) return '#ed6c02'; // Orange
-    return '#2e7d32'; // Green
+    if (score >= 80) return '#ef4444'; // Red
+    if (score >= 65) return '#f59e0b'; // Orange
+    return '#10b981'; // Green
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle sx={{ backgroundColor: '#0d47a1', color: '#fff', display: 'flex', alignItems: 'center', gap: 1 }}>
-        <PsychologyIcon />
-        <Typography variant="h6" sx={{ fontWeight: 700 }}>
-          XGBoost + SHAP Failure Risk Explainability Card
-        </Typography>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          bgcolor: '#0c1220',
+          border: '1px solid rgba(168, 85, 247, 0.3)',
+          boxShadow: '0 25px 60px rgba(0,0,0,0.8)',
+          borderRadius: 3,
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          background: 'linear-gradient(135deg, #581c87 0%, #0f172a 100%)',
+          color: '#f8fafc',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          py: 2,
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        }}
+      >
+        <PsychologyIcon sx={{ fontSize: 26, color: '#c084fc' }} />
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.2 }}>
+            XGBOOST + SHAP RISK EXPLAINABILITY ENGINE
+          </Typography>
+          <Typography variant="caption" sx={{ color: '#e9d5ff', display: 'block' }}>
+            Transparent Feature Attribution & Failure Risk Factor Decomposition
+          </Typography>
+        </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ mt: 2 }}>
+      <DialogContent sx={{ p: 3 }}>
         <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            Requisition Ticket: <strong>{data.request_id || 'N/A'}</strong> • Department: <strong>{data.department || 'TMS'}</strong>
+          <Typography variant="caption" sx={{ color: '#94a3b8', display: 'block' }}>
+            Requisition Ticket: <strong style={{ color: '#60a5fa' }}>{data.request_id || 'N/A'}</strong> • Department: <strong style={{ color: '#fbbf24' }}>{data.department || 'TMS'}</strong>
           </Typography>
-          <Typography variant="body1" sx={{ fontWeight: 600, color: '#333' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#f8fafc' }}>
             Defect: {data.defect_type || 'Track Defect'}
           </Typography>
         </Box>
 
-        <Divider sx={{ my: 1.5 }} />
+        <Divider sx={{ my: 1.5, borderColor: 'rgba(255, 255, 255, 0.08)' }} />
 
         {/* Risk Score Metric Gauge */}
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={6}>
-            <Card variant="outlined" sx={{ borderColor: getRiskColor(risk_score), borderWidth: 2 }}>
+            <Card sx={{ bgcolor: 'rgba(15, 23, 42, 0.8)', border: `1.5px solid ${getRiskColor(risk_score)}`, borderRadius: 2.5 }}>
               <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                  Predicted Failure Risk Score
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>
+                  PREDICTED FAILURE RISK SCORE
                 </Typography>
-                <Typography variant="h3" sx={{ fontWeight: 800, color: getRiskColor(risk_score) }}>
-                  {risk_score} / 100
+                <Typography variant="h3" sx={{ fontWeight: 900, color: getRiskColor(risk_score), fontFamily: '"JetBrains Mono", monospace', mt: 0.5 }}>
+                  {risk_score} <span style={{ fontSize: '1rem', color: '#64748b' }}>/ 100</span>
                 </Typography>
                 <LinearProgress
                   variant="determinate"
                   value={risk_score}
                   sx={{
-                    height: 10,
-                    borderRadius: 5,
-                    mt: 1,
-                    backgroundColor: '#e0e0e0',
-                    '& .MuiLinearProgress-bar': { backgroundColor: getRiskColor(risk_score) }
+                    height: 8,
+                    borderRadius: 4,
+                    mt: 1.5,
+                    bgcolor: 'rgba(255, 255, 255, 0.08)',
+                    '& .MuiLinearProgress-bar': { bgcolor: getRiskColor(risk_score) },
                   }}
                 />
               </CardContent>
@@ -82,19 +110,27 @@ export const SHAPExplainDialog: React.FC<SHAPExplainDialogProps> = ({ open, onCl
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Card variant="outlined">
+            <Card sx={{ bgcolor: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 2.5 }}>
               <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                  Primary Degradation Driver
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>
+                  PRIMARY DEGRADATION DRIVER
                 </Typography>
-                <Chip
-                  icon={<WarningAmberIcon />}
-                  label={primary_risk_driver}
-                  color="warning"
-                  sx={{ mt: 1, fontWeight: 700, fontSize: '0.95rem', py: 2 }}
-                />
-                <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 1 }}>
-                  Base Population Risk: {base_risk} • Model: XGBoost Regressor (R² = 0.98)
+                <Box sx={{ mt: 1 }}>
+                  <Chip
+                    icon={<WarningAmberIcon sx={{ color: '#fbbf24 !important' }} />}
+                    label={primary_risk_driver}
+                    sx={{
+                      fontWeight: 800,
+                      fontSize: '0.85rem',
+                      py: 1.8,
+                      bgcolor: 'rgba(245, 158, 11, 0.15)',
+                      border: '1px solid rgba(245, 158, 11, 0.35)',
+                      color: '#fbbf24',
+                    }}
+                  />
+                </Box>
+                <Typography variant="caption" display="block" sx={{ color: '#64748b', mt: 1.2 }}>
+                  Baseline Cohort Risk: {base_risk} • Model: XGBoost Regressor (R² = 0.98)
                 </Typography>
               </CardContent>
             </Card>
@@ -102,18 +138,26 @@ export const SHAPExplainDialog: React.FC<SHAPExplainDialogProps> = ({ open, onCl
         </Grid>
 
         {/* SHAP Attribution Waterfall Breakdown */}
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <BarChartIcon color="primary" />
+        <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#f8fafc', mb: 1.5, display: 'flex', alignItems: 'center', gap: 1, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+          <BarChartIcon sx={{ color: '#c084fc' }} />
           Quantitative Feature Attributions (SHAP Values)
         </Typography>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2 }}>
           {Object.entries(shap_attributions).map(([feature, val]) => {
             const isPositive = val >= 0;
             return (
-              <Box key={feature} sx={{ p: 1.5, borderRadius: 1.5, backgroundColor: '#f9f9f9', border: '1px solid #e0e0e0' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+              <Box
+                key={feature}
+                sx={{
+                  p: 1.5,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(15, 23, 42, 0.7)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                }}
+              >
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.8 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700, color: '#cbd5e1' }}>
                     {feature}
                   </Typography>
                   <Chip
@@ -121,8 +165,10 @@ export const SHAPExplainDialog: React.FC<SHAPExplainDialogProps> = ({ open, onCl
                     label={`${isPositive ? '+' : ''}${val}%`}
                     sx={{
                       fontWeight: 800,
-                      backgroundColor: isPositive ? '#ffebee' : '#e8f5e9',
-                      color: isPositive ? '#c62828' : '#2e7d32'
+                      fontFamily: '"JetBrains Mono", monospace',
+                      bgcolor: isPositive ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                      border: isPositive ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)',
+                      color: isPositive ? '#f87171' : '#34d399',
                     }}
                   />
                 </Box>
@@ -130,12 +176,12 @@ export const SHAPExplainDialog: React.FC<SHAPExplainDialogProps> = ({ open, onCl
                   variant="determinate"
                   value={Math.min(Math.abs(val) * 4, 100)}
                   sx={{
-                    height: 6,
+                    height: 5,
                     borderRadius: 3,
-                    backgroundColor: '#e0e0e0',
+                    bgcolor: 'rgba(255, 255, 255, 0.06)',
                     '& .MuiLinearProgress-bar': {
-                      backgroundColor: isPositive ? '#e53935' : '#43a047'
-                    }
+                      bgcolor: isPositive ? '#ef4444' : '#10b981',
+                    },
                   }}
                 />
               </Box>
@@ -144,8 +190,8 @@ export const SHAPExplainDialog: React.FC<SHAPExplainDialogProps> = ({ open, onCl
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 2 }}>
-        <Button onClick={onClose} variant="contained" sx={{ px: 3, fontWeight: 700 }}>
+      <DialogActions sx={{ p: 2.5, borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <Button onClick={onClose} variant="contained" sx={{ bgcolor: '#3b82f6', fontWeight: 800, px: 3, '&:hover': { bgcolor: '#2563eb' } }}>
           Close Explanation
         </Button>
       </DialogActions>

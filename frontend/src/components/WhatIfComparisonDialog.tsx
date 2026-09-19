@@ -7,7 +7,6 @@ import {
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import SpeedIcon from '@mui/icons-material/Speed';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import TrainIcon from '@mui/icons-material/Train';
 
 interface WhatIfComparisonDialogProps {
   open: boolean;
@@ -35,33 +34,71 @@ export const WhatIfComparisonDialog: React.FC<WhatIfComparisonDialogProps> = ({
   open,
   onClose,
   onAcceptReplan,
-  result
+  result,
 }) => {
   if (!result || !result.replan_result) return null;
 
   const { replan_result, computation_time_seconds, alert_message } = result;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle sx={{ backgroundColor: '#c62828', color: '#fff', display: 'flex', alignItems: 'center', gap: 1 }}>
-        <WarningAmberIcon />
-        <Typography variant="h6" sx={{ fontWeight: 800 }}>
-          Interactive What-If Replanner: Sub-3-Second Dynamic Re-Optimization
-        </Typography>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="lg"
+      fullWidth
+      PaperProps={{
+        sx: {
+          bgcolor: '#0c1220',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          boxShadow: '0 25px 60px rgba(0,0,0,0.8)',
+          borderRadius: 3,
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          background: 'linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%)',
+          color: '#f8fafc',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          py: 2,
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        }}
+      >
+        <WarningAmberIcon sx={{ fontSize: 26, color: '#fca5a5' }} />
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.2 }}>
+            CRISIS WHAT-IF REPLANNER • DYNAMIC RE-OPTIMIZATION
+          </Typography>
+          <Typography variant="caption" sx={{ color: '#fecaca', display: 'block' }}>
+            Sub-3-Second CP-SAT Constraint Rescheduling & Headway Preservation
+          </Typography>
+        </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ mt: 2 }}>
-        <Alert severity="warning" sx={{ mb: 2.5, fontWeight: 600 }}>
+      <DialogContent sx={{ p: 3 }}>
+        <Alert
+          severity="warning"
+          sx={{
+            mb: 3,
+            fontWeight: 700,
+            borderRadius: 2,
+            bgcolor: 'rgba(245, 158, 11, 0.12)',
+            border: '1px solid rgba(245, 158, 11, 0.35)',
+            color: '#fbbf24',
+          }}
+        >
           {alert_message}
         </Alert>
 
         {/* Real-time Solver Stats */}
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={3}>
-            <Card variant="outlined">
-              <CardContent sx={{ textAlign: 'center', py: 1.5 }}>
-                <Typography variant="caption" color="text.secondary">Solver Re-Plan Latency</Typography>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: '#2e7d32', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+            <Card sx={{ bgcolor: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: 2.5 }}>
+              <CardContent sx={{ textAlign: 'center', py: 1.8 }}>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>RE-SOLVE LATENCY</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 900, color: '#10b981', fontFamily: '"JetBrains Mono", monospace', mt: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
                   <SpeedIcon fontSize="small" />
                   {computation_time_seconds}s
                 </Typography>
@@ -70,10 +107,10 @@ export const WhatIfComparisonDialog: React.FC<WhatIfComparisonDialogProps> = ({
           </Grid>
 
           <Grid item xs={12} sm={3}>
-            <Card variant="outlined">
-              <CardContent sx={{ textAlign: 'center', py: 1.5 }}>
-                <Typography variant="caption" color="text.secondary">Asset Gain Metric</Typography>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: '#1565c0' }}>
+            <Card sx={{ bgcolor: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: 2.5 }}>
+              <CardContent sx={{ textAlign: 'center', py: 1.8 }}>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>NET ASSET GAIN</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 900, color: '#60a5fa', fontFamily: '"JetBrains Mono", monospace', mt: 0.5 }}>
                   +{replan_result.asset_availability_gain_percent}%
                 </Typography>
               </CardContent>
@@ -81,10 +118,10 @@ export const WhatIfComparisonDialog: React.FC<WhatIfComparisonDialogProps> = ({
           </Grid>
 
           <Grid item xs={12} sm={3}>
-            <Card variant="outlined">
-              <CardContent sx={{ textAlign: 'center', py: 1.5 }}>
-                <Typography variant="caption" color="text.secondary">Emergency Blocks Slotted</Typography>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: '#d32f2f' }}>
+            <Card sx={{ bgcolor: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 2.5 }}>
+              <CardContent sx={{ textAlign: 'center', py: 1.8 }}>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>RE-PLANNED BLOCKS</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 900, color: '#f87171', fontFamily: '"JetBrains Mono", monospace', mt: 0.5 }}>
                   {replan_result.total_blocks_created} Blocks
                 </Typography>
               </CardContent>
@@ -92,11 +129,11 @@ export const WhatIfComparisonDialog: React.FC<WhatIfComparisonDialogProps> = ({
           </Grid>
 
           <Grid item xs={12} sm={3}>
-            <Card variant="outlined">
-              <CardContent sx={{ textAlign: 'center', py: 1.5 }}>
-                <Typography variant="caption" color="text.secondary">Rajdhani/VB Detention</Typography>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: '#2e7d32' }}>
-                  0 Minutes
+            <Card sx={{ bgcolor: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: 2.5 }}>
+              <CardContent sx={{ textAlign: 'center', py: 1.8 }}>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>PREMIUM TRAIN DETENTION</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 900, color: '#34d399', fontFamily: '"JetBrains Mono", monospace', mt: 0.5 }}>
+                  0 MINS
                 </Typography>
               </CardContent>
             </Card>
@@ -104,72 +141,89 @@ export const WhatIfComparisonDialog: React.FC<WhatIfComparisonDialogProps> = ({
         </Grid>
 
         {/* Dynamic Re-Planned Blocks Table */}
-        <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
-          Re-Allocated Maintenance Possession Windows:
+        <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#f8fafc', mb: 1.5, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+          Dynamically Re-Allocated Maintenance Possessions:
         </Typography>
 
-        <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
-          <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 700 }}>Block ID</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Section</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Duration</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Type</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Assigned Tasks</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {replan_result.blocks.map((b) => {
-              const isEmergency = b.maintenance_tasks?.some((t: any) => t.request_id?.includes('EMERGENCY'));
-              return (
-                <TableRow key={b.block_id} sx={{ backgroundColor: isEmergency ? '#ffebee' : 'inherit' }}>
-                  <TableCell sx={{ fontWeight: 700 }}>
-                    {b.block_id}
-                    {isEmergency && <Chip size="small" label="EMERGENCY" color="error" sx={{ ml: 1, fontWeight: 700 }} />}
-                  </TableCell>
-                  <TableCell>{b.section_id}</TableCell>
-                  <TableCell>{b.total_duration_minutes} mins</TableCell>
-                  <TableCell>
-                    <Chip
-                      size="small"
-                      label={b.is_combined ? 'Combined Super-Block' : 'Single Dept'}
-                      color={b.is_combined ? 'secondary' : 'default'}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {b.maintenance_tasks?.map((t: any) => (
-                      <Typography key={t.request_id} variant="caption" display="block">
-                        • <strong>[{t.department}]</strong> {t.defect_type} (Score: {t.priority_score})
-                      </Typography>
-                    ))}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-
-        {/* Train Dispatch Holding Note */}
-        <Box sx={{ mt: 2.5, p: 1.5, backgroundColor: '#e8f5e9', borderRadius: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <CheckCircleIcon color="success" />
-          <Typography variant="body2" sx={{ color: '#2e7d32', fontWeight: 600 }}>
-            Dynamic Dispatch Protection Active: Freight rakes held on Station Common Loops; Zero detention to Priority 1 Trains (Vande Bharat 22436 / Swarna Shatabdi 12004).
-          </Typography>
+        <Box sx={{ border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 2.5, overflow: 'hidden' }}>
+          <Table size="small">
+            <TableHead sx={{ bgcolor: 'rgba(15, 23, 42, 0.95)' }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 800, color: '#94a3b8' }}>Block ID</TableCell>
+                <TableCell sx={{ fontWeight: 800, color: '#94a3b8' }}>Section</TableCell>
+                <TableCell sx={{ fontWeight: 800, color: '#94a3b8' }}>Duration</TableCell>
+                <TableCell sx={{ fontWeight: 800, color: '#94a3b8' }}>Type</TableCell>
+                <TableCell sx={{ fontWeight: 800, color: '#94a3b8' }}>Assigned Requisitions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {replan_result.blocks.map((b) => {
+                const isEmergency = b.maintenance_tasks?.some((t: any) => t.request_id?.includes('EMERGENCY'));
+                return (
+                  <TableRow
+                    key={b.block_id}
+                    sx={{
+                      bgcolor: isEmergency ? 'rgba(239, 68, 68, 0.12)' : 'transparent',
+                      '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.03)' },
+                    }}
+                  >
+                    <TableCell sx={{ fontWeight: 800, fontFamily: '"JetBrains Mono", monospace', color: isEmergency ? '#fca5a5' : '#f8fafc' }}>
+                      {b.block_id}
+                      {isEmergency && (
+                        <Chip size="small" label="EMERGENCY" color="error" sx={{ ml: 1, fontWeight: 800, height: 20, fontSize: '0.65rem' }} />
+                      )}
+                    </TableCell>
+                    <TableCell sx={{ color: '#94a3b8' }}>{b.section_id}</TableCell>
+                    <TableCell sx={{ color: '#22d3ee', fontWeight: 700 }}>{b.total_duration_minutes} mins</TableCell>
+                    <TableCell>
+                      <Chip
+                        size="small"
+                        label={b.is_combined ? 'SUPER-BLOCK' : 'SINGLE'}
+                        sx={{
+                          height: 20,
+                          fontSize: '0.65rem',
+                          fontWeight: 800,
+                          bgcolor: b.is_combined ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.15)',
+                          color: b.is_combined ? '#fbbf24' : '#60a5fa',
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {b.maintenance_tasks?.map((t: any) => (
+                        <Typography key={t.request_id} variant="caption" sx={{ display: 'block', color: '#cbd5e1' }}>
+                          [{t.department}] {t.defect_type} (KM {t.from_km}-{t.to_km})
+                        </Typography>
+                      ))}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 2, gap: 1 }}>
-        <Button onClick={onClose} variant="outlined" color="inherit">
-          Discard Simulation
+      <DialogActions sx={{ p: 2.5, borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <Button onClick={onClose} sx={{ color: '#94a3b8', fontWeight: 700 }}>
+          Dismiss
         </Button>
         <Button
-          onClick={onAcceptReplan}
           variant="contained"
-          color="error"
-          startIcon={<TrainIcon />}
-          sx={{ px: 3, fontWeight: 700 }}
+          startIcon={<CheckCircleIcon />}
+          onClick={onAcceptReplan}
+          sx={{
+            fontWeight: 800,
+            px: 2.5,
+            py: 0.8,
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
+            },
+          }}
         >
-          Commit Re-Plan to Division
+          ACCEPT & APPLY RE-PLANNED SCHEDULE
         </Button>
       </DialogActions>
     </Dialog>

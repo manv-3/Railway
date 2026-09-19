@@ -200,62 +200,115 @@ export const DivisionalControlCockpit: React.FC = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       {/* Hero Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: '#1a237e' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
+            <Typography variant="h4" sx={{ fontWeight: 900, color: '#f8fafc', letterSpacing: '-0.02em' }}>
               Divisional Control Cockpit
             </Typography>
-            <Chip label="Tier 3 • Operational Core" color="primary" sx={{ fontWeight: 700 }} />
+            <Chip
+              label="Tier 3 • Tactical Core"
+              size="small"
+              sx={{
+                bgcolor: 'rgba(59, 130, 246, 0.15)',
+                border: '1px solid rgba(59, 130, 246, 0.4)',
+                color: '#60a5fa',
+                fontWeight: 800,
+                fontSize: '0.72rem',
+              }}
+            />
           </Box>
-          <Typography variant="body2" color="text.secondary">
-            Senior Divisional Operations Manager (Sr. DOM) & Section Controllers Real-Time Tactical Dashboard
+          <Typography variant="body2" sx={{ color: '#94a3b8' }}>
+            Senior Divisional Operations Manager (Sr. DOM) & Section Controllers Real-Time Tactical Dispatch & Optimization Console
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
+        {/* Tactical Action Hub */}
+        <Box sx={{ display: 'flex', gap: 1.2, flexWrap: 'wrap' }}>
           <Button
             variant="outlined"
-            color="primary"
             startIcon={<CompareArrowsIcon />}
             onClick={() => setBenchmarkOpen(true)}
             disabled={loading}
-            sx={{ fontWeight: 700, borderRadius: 2 }}
+            sx={{
+              fontWeight: 800,
+              borderRadius: 2,
+              borderColor: 'rgba(59, 130, 246, 0.4)',
+              color: '#60a5fa',
+              bgcolor: 'rgba(59, 130, 246, 0.06)',
+              '&:hover': {
+                bgcolor: 'rgba(59, 130, 246, 0.15)',
+                borderColor: '#60a5fa',
+                boxShadow: '0 0 15px rgba(59, 130, 246, 0.3)',
+              },
+            }}
           >
             Benchmark vs Manual
           </Button>
 
           <Button
             variant="outlined"
-            color="warning"
             startIcon={<AccessTimeIcon />}
             onClick={handleSimulateTrainDelay}
             disabled={loading}
-            sx={{ fontWeight: 700, borderRadius: 2 }}
+            sx={{
+              fontWeight: 800,
+              borderRadius: 2,
+              borderColor: 'rgba(245, 158, 11, 0.4)',
+              color: '#fbbf24',
+              bgcolor: 'rgba(245, 158, 11, 0.06)',
+              '&:hover': {
+                bgcolor: 'rgba(245, 158, 11, 0.15)',
+                borderColor: '#fbbf24',
+                boxShadow: '0 0 15px rgba(245, 158, 11, 0.3)',
+              },
+            }}
           >
             What-If: VB +45m
           </Button>
 
           <Button
             variant="outlined"
-            color="error"
             startIcon={<WarningAmberIcon />}
             onClick={handleSimulateEmergencyFracture}
             disabled={loading}
-            sx={{ fontWeight: 700, borderRadius: 2 }}
+            sx={{
+              fontWeight: 800,
+              borderRadius: 2,
+              borderColor: 'rgba(239, 68, 68, 0.4)',
+              color: '#f87171',
+              bgcolor: 'rgba(239, 68, 68, 0.06)',
+              '&:hover': {
+                bgcolor: 'rgba(239, 68, 68, 0.15)',
+                borderColor: '#f87171',
+                boxShadow: '0 0 15px rgba(239, 68, 68, 0.3)',
+              },
+            }}
           >
             What-If: Rail Fracture
           </Button>
 
           <Button
             variant="contained"
-            color="warning"
-            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <PlayArrowIcon />}
+            startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <PlayArrowIcon />}
             onClick={handleRunOptimization}
             disabled={loading}
-            sx={{ fontWeight: 800, fontSize: '1rem', px: 3, borderRadius: 2 }}
+            sx={{
+              fontWeight: 900,
+              fontSize: '0.92rem',
+              px: 2.8,
+              py: 0.9,
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: '#ffffff',
+              boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
+                boxShadow: '0 0 25px rgba(16, 185, 129, 0.6)',
+              },
+            }}
           >
-            Run CP-SAT Optimizer
+            {loading ? 'SOLVING CP-SAT…' : 'RUN CP-SAT OPTIMIZER'}
           </Button>
         </Box>
       </Box>
@@ -267,19 +320,19 @@ export const DivisionalControlCockpit: React.FC = () => {
       <Grid container spacing={3}>
         {/* Left Column: Interactive GIS Map */}
         <Grid item xs={12} lg={7}>
-          <Card sx={{ height: '100%', boxShadow: 2, borderRadius: 2 }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+          <Card sx={{ height: '100%', borderRadius: 3, border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden' }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1.5 }}>
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#0d47a1' }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#60a5fa', letterSpacing: '0.01em' }}>
                     {viewMode === 'gis'
-                      ? 'Golden Corridor Directional Track Topology (NDLS - CNB)'
-                      : `Junction Yard Interlocking Schematic (${schematicStation})`}
+                      ? 'GOLDEN CORRIDOR DIRECTIONAL TOPOLOGY (NDLS - CNB)'
+                      : `JUNCTION YARD INTERLOCKING SCHEMATIC (${schematicStation})`}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="caption" sx={{ color: '#94a3b8', display: 'block' }}>
                     {viewMode === 'gis'
-                      ? 'Real-time GIS track monitoring with directional separation (Up/Down) & station loop lines'
-                      : '4-Aspect signalling, points/crossings & active maintenance block track circuit isolation'}
+                      ? 'Real-time GIS track telemetry • Directional Up/Down separation • High-density monitoring'
+                      : '4-Aspect colour signalling, points/crossings & active maintenance possession isolation envelope'}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1 }}>
@@ -289,8 +342,28 @@ export const DivisionalControlCockpit: React.FC = () => {
                     onChange={(_, val) => val && setViewMode(val)}
                     size="small"
                   >
-                    <ToggleButton value="gis" sx={{ fontWeight: 700, px: 2 }}>GIS Map</ToggleButton>
-                    <ToggleButton value="schematic" sx={{ fontWeight: 700, px: 2 }}>Yard Schematic</ToggleButton>
+                    <ToggleButton
+                      value="gis"
+                      sx={{
+                        fontWeight: 800,
+                        px: 1.8,
+                        fontSize: '0.75rem',
+                        '&.Mui-selected': { bgcolor: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa' },
+                      }}
+                    >
+                      GIS MAP
+                    </ToggleButton>
+                    <ToggleButton
+                      value="schematic"
+                      sx={{
+                        fontWeight: 800,
+                        px: 1.8,
+                        fontSize: '0.75rem',
+                        '&.Mui-selected': { bgcolor: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa' },
+                      }}
+                    >
+                      YARD SCHEMATIC
+                    </ToggleButton>
                   </ToggleButtonGroup>
 
                   {viewMode === 'schematic' && (
@@ -299,28 +372,55 @@ export const DivisionalControlCockpit: React.FC = () => {
                       exclusive
                       onChange={(_, val) => val && setSchematicStation(val)}
                       size="small"
-                      color="primary"
                     >
-                      <ToggleButton value="GZB" sx={{ fontWeight: 700 }}>GZB</ToggleButton>
-                      <ToggleButton value="ALJN" sx={{ fontWeight: 700 }}>ALJN</ToggleButton>
+                      <ToggleButton
+                        value="GZB"
+                        sx={{
+                          fontWeight: 800,
+                          fontSize: '0.75rem',
+                          '&.Mui-selected': { bgcolor: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24' },
+                        }}
+                      >
+                        GZB
+                      </ToggleButton>
+                      <ToggleButton
+                        value="ALJN"
+                        sx={{
+                          fontWeight: 800,
+                          fontSize: '0.75rem',
+                          '&.Mui-selected': { bgcolor: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24' },
+                        }}
+                      >
+                        ALJN
+                      </ToggleButton>
                     </ToggleButtonGroup>
                   )}
                 </Box>
               </Box>
 
               {viewMode === 'gis' ? (
-                <Box sx={{ height: 500, width: '100%', borderRadius: 2, overflow: 'hidden' }}>
+                <Box sx={{ height: 500, width: '100%', borderRadius: 2.5, overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
                   <CorridorMap stations={stations} sections={sections} blocks={blocks} />
                 </Box>
               ) : (
-                <Box sx={{ minHeight: 480, width: '100%', borderRadius: 2, overflow: 'hidden', p: 1, bgcolor: '#f8fafc' }}>
+                <Box sx={{ minHeight: 480, width: '100%', borderRadius: 2.5, overflow: 'hidden', p: 1.5, bgcolor: '#070c18', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
                   <YardInterlockingSchematic
                     stationCode={schematicStation}
                     activeBlock={selectedBlock?.block_id}
                   />
                   {selectedBlock && (
-                    <Alert severity="info" sx={{ mt: 1.5, py: 0.5, borderRadius: 1.5 }}>
-                      Interlocking Highlight: <b>{selectedBlock.block_id}</b> on section <b>{selectedBlock.section_id}</b> ({selectedBlock.duration_minutes || selectedBlock.total_duration_minutes} mins) — Signals holding automatic red envelope.
+                    <Alert
+                      severity="warning"
+                      sx={{
+                        mt: 1.5,
+                        py: 0.5,
+                        borderRadius: 2,
+                        bgcolor: 'rgba(245, 158, 11, 0.1)',
+                        border: '1px solid rgba(245, 158, 11, 0.3)',
+                        color: '#fbbf24',
+                      }}
+                    >
+                      Interlocking Highlight: <b>{selectedBlock.block_id}</b> on section <b>{selectedBlock.section_id}</b> ({selectedBlock.duration_minutes || selectedBlock.total_duration_minutes} mins) — Signals holding automatic red envelope under G&SR 2026.
                     </Alert>
                   )}
                 </Box>
@@ -332,15 +432,19 @@ export const DivisionalControlCockpit: React.FC = () => {
         {/* Right Column: Scheduled Combined Blocks & Tasks */}
         <Grid item xs={12} lg={5}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#0d47a1' }}>
-              Scheduled Maintenance Blocks & Bundles
+            <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#f8fafc', letterSpacing: '0.01em' }}>
+              SCHEDULED MAINTENANCE POSSESSIONS
             </Typography>
             <Chip
               label={`${filteredBlocks.length} of ${blocks.length} Blocks`}
               size="small"
-              color="primary"
-              variant="outlined"
-              sx={{ fontWeight: 700 }}
+              sx={{
+                bgcolor: 'rgba(59, 130, 246, 0.15)',
+                border: '1px solid rgba(59, 130, 246, 0.3)',
+                color: '#60a5fa',
+                fontWeight: 800,
+                fontSize: '0.72rem',
+              }}
             />
           </Box>
 
@@ -354,11 +458,11 @@ export const DivisionalControlCockpit: React.FC = () => {
                 setSearchQuery(e.target.value);
                 setPage(1);
               }}
-              sx={{ flexGrow: 1, minWidth: 160 }}
+              sx={{ flexGrow: 1, minWidth: 150 }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon fontSize="small" />
+                    <SearchIcon fontSize="small" sx={{ color: '#64748b' }} />
                   </InputAdornment>
                 ),
               }}
@@ -374,139 +478,216 @@ export const DivisionalControlCockpit: React.FC = () => {
                 }
               }}
             >
-              <ToggleButton value="ALL" sx={{ px: 1, py: 0.5, fontSize: '0.72rem', fontWeight: 700 }}>
+              <ToggleButton value="ALL" sx={{ px: 1.2, py: 0.5, fontSize: '0.72rem', fontWeight: 800 }}>
                 All ({blocks.length})
               </ToggleButton>
-              <ToggleButton value="PLANNED" sx={{ px: 1, py: 0.5, fontSize: '0.72rem', fontWeight: 700 }}>
+              <ToggleButton value="PLANNED" sx={{ px: 1.2, py: 0.5, fontSize: '0.72rem', fontWeight: 800 }}>
                 Planned ({plannedCount})
               </ToggleButton>
-              <ToggleButton value="SANCTIONED" sx={{ px: 1, py: 0.5, fontSize: '0.72rem', fontWeight: 700 }}>
+              <ToggleButton value="SANCTIONED" sx={{ px: 1.2, py: 0.5, fontSize: '0.72rem', fontWeight: 800 }}>
                 Sanctioned ({sanctionedCount})
               </ToggleButton>
-              <ToggleButton value="FIT_RESTORED" sx={{ px: 1, py: 0.5, fontSize: '0.72rem', fontWeight: 700 }}>
+              <ToggleButton value="FIT_RESTORED" sx={{ px: 1.2, py: 0.5, fontSize: '0.72rem', fontWeight: 800 }}>
                 Restored ({fitCount})
               </ToggleButton>
             </ToggleButtonGroup>
           </Box>
 
           {filteredBlocks.length === 0 ? (
-            <Alert severity="info" sx={{ borderRadius: 2 }}>
-              {blocks.length === 0
-                ? <>No active maintenance blocks. Click <b>Run CP-SAT Optimizer</b> above to solve pending TMS/SMMS/TDMS requisitions.</>
-                : <>No maintenance blocks match the search/filter criteria.</>}
-            </Alert>
+            <Card sx={{ p: 2, textAlign: 'center', borderRadius: 3, border: '1px dashed rgba(255,255,255,0.15)' }}>
+              <Typography variant="body2" sx={{ color: '#94a3b8' }}>
+                {blocks.length === 0
+                  ? <>No active blocks scheduled. Click <b>Run CP-SAT Optimizer</b> above to bundle pending TMS/SMMS/TDMS requisitions.</>
+                  : <>No maintenance blocks match the search/filter criteria.</>}
+              </Typography>
+            </Card>
           ) : (
             <>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: 620, overflowY: 'auto', pr: 0.5 }}>
-                {paginatedBlocks.map((b) => (
-                  <Card
-                    key={b.id || b.block_id}
-                    variant="outlined"
-                    onClick={() => {
-                      setSelectedBlock(b);
-                      if (b.section_id?.includes('ALJN')) setSchematicStation('ALJN');
-                      else setSchematicStation('GZB');
-                    }}
-                    sx={{
-                      flexShrink: 0,
-                      minHeight: 'fit-content',
-                      borderRadius: 2,
-                      borderLeft: `6px solid ${b.is_combined ? '#ff9800' : '#2196f3'}`,
-                      borderRight: selectedBlock?.block_id === b.block_id ? '4px solid #00c853' : 'none',
-                      bgcolor: selectedBlock?.block_id === b.block_id ? '#f0fdf4' : 'inherit',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      boxShadow: selectedBlock?.block_id === b.block_id ? 3 : 1
-                    }}
-                  >
-                    <CardContent sx={{ pb: 1.5 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
-                            {b.block_id}
-                          </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.8, maxHeight: 620, overflowY: 'auto', pr: 0.5 }}>
+                {paginatedBlocks.map((b) => {
+                  const isSelected = selectedBlock?.block_id === b.block_id;
+                  return (
+                    <Card
+                      key={b.id || b.block_id}
+                      onClick={() => {
+                        setSelectedBlock(b);
+                        if (b.section_id?.includes('ALJN')) setSchematicStation('ALJN');
+                        else setSchematicStation('GZB');
+                      }}
+                      sx={{
+                        flexShrink: 0,
+                        minHeight: 'fit-content',
+                        borderRadius: 2.5,
+                        border: isSelected ? '1.5px solid #10b981' : '1px solid rgba(255, 255, 255, 0.08)',
+                        borderLeft: `5px solid ${b.is_combined ? '#f59e0b' : '#3b82f6'}`,
+                        bgcolor: isSelected ? 'rgba(16, 185, 129, 0.06)' : 'rgba(15, 23, 42, 0.85)',
+                        backdropFilter: 'blur(12px)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: isSelected ? '0 0 25px rgba(16, 185, 129, 0.25)' : '0 4px 15px rgba(0,0,0,0.4)',
+                        '&:hover': {
+                          border: isSelected ? '1.5px solid #10b981' : '1px solid rgba(255, 255, 255, 0.2)',
+                          transform: 'translateY(-1px)',
+                        },
+                      }}
+                    >
+                      <CardContent sx={{ p: 2, pb: 2, '&:last-child': { pb: 2 } }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#f8fafc', fontFamily: '"JetBrains Mono", monospace' }}>
+                              {b.block_id}
+                            </Typography>
+                            <Chip
+                              label={b.is_combined ? 'SUPER-BLOCK' : 'SINGLE'}
+                              size="small"
+                              sx={{
+                                fontWeight: 800,
+                                fontSize: '0.68rem',
+                                bgcolor: b.is_combined ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.15)',
+                                border: b.is_combined ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid rgba(59, 130, 246, 0.4)',
+                                color: b.is_combined ? '#fbbf24' : '#60a5fa',
+                              }}
+                            />
+                          </Box>
                           <Chip
-                            label={b.is_combined ? 'COMBINED SUPER-BLOCK' : 'SINGLE'}
+                            label={b.status}
                             size="small"
-                            color={b.is_combined ? 'warning' : 'default'}
-                            sx={{ fontWeight: 700, fontSize: '0.7rem' }}
+                            sx={{
+                              fontWeight: 800,
+                              fontSize: '0.68rem',
+                              bgcolor:
+                                b.status === 'FIT_RESTORED'
+                                  ? 'rgba(16, 185, 129, 0.15)'
+                                  : b.status === 'SANCTIONED'
+                                  ? 'rgba(59, 130, 246, 0.15)'
+                                  : 'rgba(148, 163, 184, 0.12)',
+                              border:
+                                b.status === 'FIT_RESTORED'
+                                  ? '1px solid rgba(16, 185, 129, 0.4)'
+                                  : b.status === 'SANCTIONED'
+                                  ? '1px solid rgba(59, 130, 246, 0.4)'
+                                  : '1px solid rgba(148, 163, 184, 0.25)',
+                              color:
+                                b.status === 'FIT_RESTORED'
+                                  ? '#34d399'
+                                  : b.status === 'SANCTIONED'
+                                  ? '#60a5fa'
+                                  : '#94a3b8',
+                            }}
                           />
                         </Box>
-                        <Chip
-                          label={b.status}
-                          size="small"
-                          color={b.status === 'FIT_RESTORED' ? 'success' : b.status === 'SANCTIONED' ? 'primary' : 'default'}
-                        />
-                      </Box>
 
-                      <Typography variant="body2" color="text.secondary">
-                        Section: <b>{b.section_id}</b> • Duration: <b>{b.duration_minutes || b.total_duration_minutes} mins</b>
-                      </Typography>
+                        <Typography variant="caption" sx={{ color: '#94a3b8', display: 'block', mb: 1 }}>
+                          Section: <strong style={{ color: '#f1f5f9' }}>{b.section_id}</strong> • Duration: <strong style={{ color: '#22d3ee' }}>{b.duration_minutes || b.total_duration_minutes} mins</strong>
+                        </Typography>
 
-                      {b.explanation && (
-                        <Box sx={{ my: 1 }}>
-                          <Alert severity="info" sx={{ p: 0.8, fontSize: '0.78rem', mb: 0.5, borderRadius: 1.5 }}>
-                            <b>AI Operational Reasoner Brief:</b> {b.explanation.summary}
-                          </Alert>
-                          {b.explanation.tradeoff && (
-                            <Box sx={{ p: 1, bgcolor: '#fff3e0', border: '1px solid #ffe0b2', borderRadius: 1.5, fontSize: '0.75rem', color: '#e65100' }}>
-                              <b>⚖️ Operational Trade-off:</b> {b.explanation.tradeoff}
-                            </Box>
-                          )}
-                        </Box>
-                      )}
-
-                      <Accordion sx={{ boxShadow: 'none', '&:before': { display: 'none' }, bgcolor: '#f9f9f9', mt: 1 }}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                          <Typography variant="caption" sx={{ fontWeight: 700 }}>
-                            View {(b.tasks || b.maintenance_tasks)?.length || 1} Bundled Requisitions
-                          </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails sx={{ p: 1 }}>
-                          {(b.tasks || b.maintenance_tasks)?.map((t: any) => (
-                            <Box key={t.request_id} sx={{ mb: 0.5, p: 1, bgcolor: '#fff', borderRadius: 1, border: '1px solid #eee' }}>
-                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Typography variant="caption" sx={{ fontWeight: 700, color: '#1a237e' }}>
-                                  [{t.department}] {t.request_id} - {t.defect_type}
-                                </Typography>
-                                <Button
-                                  size="small"
-                                  startIcon={<PsychologyIcon />}
-                                  sx={{ textTransform: 'none', fontSize: '0.7rem', py: 0 }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleExplainTask(t.request_id);
-                                  }}
-                                >
-                                  Explain Risk
-                                </Button>
-                              </Box>
-                              <Typography variant="caption" display="block" color="text.secondary">
-                                KM {t.from_km} to {t.to_km} • Priority Score: <strong>{t.priority_score}</strong>
+                        {b.explanation && (
+                          <Box sx={{ my: 1 }}>
+                            <Box sx={{ p: 1, bgcolor: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: 1.5, mb: 0.6 }}>
+                              <Typography variant="caption" sx={{ color: '#93c5fd', fontSize: '0.74rem', display: 'block' }}>
+                                <b>🤖 AI Reasoner:</b> {b.explanation.summary}
                               </Typography>
                             </Box>
-                          ))}
-                        </AccordionDetails>
-                      </Accordion>
+                            {b.explanation.tradeoff && (
+                              <Box sx={{ p: 1, bgcolor: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.25)', borderRadius: 1.5 }}>
+                                <Typography variant="caption" sx={{ color: '#fde047', fontSize: '0.74rem', display: 'block' }}>
+                                  <b>⚖️ Operational Trade-off:</b> {b.explanation.tradeoff}
+                                </Typography>
+                              </Box>
+                            )}
+                          </Box>
+                        )}
 
-                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1.5 }}>
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="primary"
-                          startIcon={<SecurityIcon />}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedBlock(b);
-                            setSafetyDialogOpen(true);
+                        <Accordion
+                          sx={{
+                            boxShadow: 'none',
+                            '&:before': { display: 'none' },
+                            bgcolor: 'rgba(10, 15, 26, 0.7)',
+                            border: '1px solid rgba(255, 255, 255, 0.06)',
+                            borderRadius: 1.5,
+                            mt: 1,
                           }}
                         >
-                          Safety Handshake (Memos)
-                        </Button>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                ))}
+                          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#64748b' }} />}>
+                            <Typography variant="caption" sx={{ fontWeight: 800, color: '#94a3b8' }}>
+                              View {(b.tasks || b.maintenance_tasks)?.length || 1} Bundled Department Requisitions
+                            </Typography>
+                          </AccordionSummary>
+                          <AccordionDetails sx={{ p: 1 }}>
+                            {(b.tasks || b.maintenance_tasks)?.map((t: any) => (
+                              <Box
+                                key={t.request_id}
+                                sx={{
+                                  mb: 0.8,
+                                  p: 1.2,
+                                  bgcolor: 'rgba(15, 23, 42, 0.9)',
+                                  borderRadius: 1.5,
+                                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                                }}
+                              >
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <Typography variant="caption" sx={{ fontWeight: 800, color: '#60a5fa' }}>
+                                    [{t.department}] {t.request_id} • {t.defect_type}
+                                  </Typography>
+                                  <Button
+                                    size="small"
+                                    startIcon={<PsychologyIcon sx={{ fontSize: 13 }} />}
+                                    sx={{
+                                      textTransform: 'none',
+                                      fontSize: '0.68rem',
+                                      py: 0.2,
+                                      px: 0.8,
+                                      bgcolor: 'rgba(168, 85, 247, 0.1)',
+                                      color: '#c084fc',
+                                      border: '1px solid rgba(168, 85, 247, 0.3)',
+                                      '&:hover': { bgcolor: 'rgba(168, 85, 247, 0.2)' },
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleExplainTask(t.request_id);
+                                    }}
+                                  >
+                                    Explain Risk
+                                  </Button>
+                                </Box>
+                                <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.3 }}>
+                                  KM {t.from_km} to {t.to_km} • Priority Score: <strong style={{ color: '#fbbf24' }}>{t.priority_score}</strong>
+                                </Typography>
+                              </Box>
+                            ))}
+                          </AccordionDetails>
+                        </Accordion>
+
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1.5 }}>
+                          <Button
+                            size="small"
+                            variant="contained"
+                            startIcon={<SecurityIcon />}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedBlock(b);
+                              setSafetyDialogOpen(true);
+                            }}
+                            sx={{
+                              fontSize: '0.75rem',
+                              fontWeight: 800,
+                              py: 0.6,
+                              px: 1.5,
+                              borderRadius: 1.5,
+                              background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                              boxShadow: '0 2px 10px rgba(37, 99, 235, 0.3)',
+                              '&:hover': {
+                                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                              },
+                            }}
+                          >
+                            Safety Handshake (Form T/351)
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </Box>
 
               {pageCount > 1 && (
