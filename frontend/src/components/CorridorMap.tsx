@@ -9,13 +9,16 @@ interface CorridorMapProps {
   blocks: MaintenanceBlock[];
   selectedBlockId?: string;
   onSelectBlock?: (block: MaintenanceBlock) => void;
+  height?: string | number;
 }
 
 export const CorridorMap: React.FC<CorridorMapProps> = ({
   stations,
   sections,
   blocks,
+  selectedBlockId,
   onSelectBlock,
+  height = '100%',
 }) => {
   // Center roughly at Aligarh Junction
   const defaultCenter: [number, number] = [27.8974, 78.0880];
@@ -26,7 +29,7 @@ export const CorridorMap: React.FC<CorridorMapProps> = ({
   };
 
   return (
-    <Box sx={{ height: 420, width: '100%', borderRadius: 2, overflow: 'hidden', boxShadow: 2 }}>
+    <Box sx={{ height, width: '100%', borderRadius: 2, overflow: 'hidden', boxShadow: 2 }}>
       <MapContainer
         center={defaultCenter}
         zoom={7}
@@ -103,14 +106,24 @@ export const CorridorMap: React.FC<CorridorMapProps> = ({
           const midLng = (start[1] + end[1]) / 2;
 
           const isCombined = blk.is_combined;
-          const markerColor = isCombined ? '#e65100' : '#2e7d32'; // Orange for combined, Green for single
+          const isSelected = selectedBlockId === blk.block_id;
+          const markerColor = isSelected
+            ? '#10b981'
+            : isCombined
+            ? '#f59e0b'
+            : '#0284c7';
 
           return (
             <CircleMarker
               key={blk.block_id}
               center={[midLat, midLng]}
-              radius={isCombined ? 11 : 9}
-              pathOptions={{ fillColor: markerColor, color: '#ffffff', weight: 3, fillOpacity: 1.0 }}
+              radius={isSelected ? 14 : isCombined ? 10 : 8}
+              pathOptions={{
+                fillColor: markerColor,
+                color: isSelected ? '#ffffff' : 'rgba(255,255,255,0.8)',
+                weight: isSelected ? 4 : 2,
+                fillOpacity: 0.95,
+              }}
               eventHandlers={{
                 click: () => onSelectBlock && onSelectBlock(blk),
               }}
