@@ -75,3 +75,48 @@ export interface OptimizationMetrics {
   asset_availability_gain_percent: number;
   wall_time_seconds: number;
 }
+
+export interface TrainStationStop {
+  station_code: string;
+  station_name: string;
+  kilometer_mark: number;
+  latitude: number;
+  longitude: number;
+  scheduled_arrival: string;
+  scheduled_departure: string;
+  actual_arrival: string;
+  actual_departure: string;
+  platform: string;
+  status: 'PASSED' | 'AT_STATION' | 'APPROACHING' | 'SCHEDULED';
+  halt_minutes: number;
+}
+
+export interface CorridorTrain {
+  train_number: string;
+  train_name: string;
+  train_category: 'VANDE_BHARAT' | 'RAJDHANI' | 'SHATABDI' | 'SUPERFAST' | 'MAIL_EXPRESS' | 'FREIGHT';
+  priority_precedence: 1 | 2 | 3 | 4;
+  priority_label: string;
+  regulation_rights: string;
+  direction: 'UP' | 'DOWN'; // UP: CNB -> NDLS, DOWN: NDLS -> CNB
+  source_station: string;
+  destination_station: string;
+  current_location: {
+    section_id: string;
+    section_name: string;
+    current_km: number;
+    latitude: number;
+    longitude: number;
+    speed_kmh: number;
+  };
+  delay_minutes: number;
+  delay_display: string;
+  punctuality_status: 'ON_TIME' | 'MINOR_DELAY' | 'MAJOR_DELAY';
+  delay_cause?: string;
+  locomotive_class: string;
+  rake_composition: string;
+  kavach_enabled: boolean;
+  station_stops: TrainStationStop[];
+  route_sections: string[];
+}
+

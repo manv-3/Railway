@@ -30,7 +30,9 @@ import { SafetyMemoDialog } from '../components/SafetyMemoDialog';
 import { SHAPExplainDialog } from '../components/SHAPExplainDialog';
 import { WhatIfComparisonDialog } from '../components/WhatIfComparisonDialog';
 import { OptimizerBenchmarkModal } from '../components/OptimizerBenchmarkModal';
-import { Station, Section, MaintenanceBlock, OptimizationMetrics } from '../types';
+import { TrainDetailDialog } from '../components/TrainDetailDialog';
+import { Station, Section, MaintenanceBlock, OptimizationMetrics, CorridorTrain } from '../types';
+import { getTrainByNumber } from '../data/corridorTrains';
 import {
   getCorridorStations,
   getCorridorSections,
@@ -51,6 +53,23 @@ export const DivisionalControlCockpit: React.FC = () => {
   const [viewMode, setViewMode] = useState<'timeline' | 'gis' | 'schematic'>('timeline');
   const [schematicStation, setSchematicStation] = useState<'GZB' | 'ALJN'>('GZB');
   const [safetyDialogOpen, setSafetyDialogOpen] = useState(false);
+
+  // Train Tactical Inspector states
+  const [selectedTrain, setSelectedTrain] = useState<CorridorTrain | null>(null);
+  const [trainDialogOpen, setTrainDialogOpen] = useState<boolean>(false);
+
+  const handleInspectTrain = (trainOrNumber: CorridorTrain | string) => {
+    if (typeof trainOrNumber === 'string') {
+      const found = getTrainByNumber(trainOrNumber);
+      if (found) {
+        setSelectedTrain(found);
+        setTrainDialogOpen(true);
+      }
+    } else {
+      setSelectedTrain(trainOrNumber);
+      setTrainDialogOpen(true);
+    }
+  };
 
   // Phase 2: What-If & SHAP states
   const [whatIfResult, setWhatIfResult] = useState<any | null>(null);
@@ -282,19 +301,24 @@ export const DivisionalControlCockpit: React.FC = () => {
 
           <Box sx={{ height: 16, width: '1px', bgcolor: '#cbd5e1' }} />
 
-          <Chip
-            icon={<DirectionsTransitIcon sx={{ fontSize: '13px !important', color: '#059669 !important' }} />}
-            label="58 Live Trains"
-            size="small"
-            sx={{
-              height: 22,
-              fontSize: '0.7rem',
-              fontWeight: 700,
-              bgcolor: '#ecfdf5',
-              color: '#047857',
-              border: '1px solid #a7f3d0',
-            }}
-          />
+          <Tooltip title="Click to inspect active corridor trains fleet and punctuality">
+            <Chip
+              icon={<DirectionsTransitIcon sx={{ fontSize: '13px !important', color: '#059669 !important' }} />}
+              label="58 Live Trains • Radar"
+              size="small"
+              clickable
+              onClick={() => handleInspectTrain('22436')}
+              sx={{
+                height: 22,
+                fontSize: '0.7rem',
+                fontWeight: 800,
+                bgcolor: '#ecfdf5',
+                color: '#047857',
+                border: '1px solid #a7f3d0',
+                '&:hover': { bgcolor: '#d1fae5' },
+              }}
+            />
+          </Tooltip>
 
           <Chip
             icon={<ShieldIcon sx={{ fontSize: '13px !important', color: '#d97706 !important' }} />}
@@ -890,6 +914,7 @@ export const DivisionalControlCockpit: React.FC = () => {
               <CorridorStringChart
                 selectedBlock={selectedBlock}
                 onSelectBlock={(b) => setSelectedBlock(b)}
+                onSelectTrain={handleInspectTrain}
                 blocks={blocks}
               />
             ) : viewMode === 'gis' ? (
@@ -898,6 +923,8 @@ export const DivisionalControlCockpit: React.FC = () => {
                 sections={sections}
                 blocks={blocks}
                 selectedBlockId={selectedBlock?.block_id}
+                selectedTrainNumber={selectedTrain?.train_number}
+                onSelectTrain={handleInspectTrain}
                 onSelectBlock={(b) => {
                   setSelectedBlock(b);
                   if (b.section_id?.includes('ALJN')) setSchematicStation('ALJN');
@@ -1173,27 +1200,39 @@ export const DivisionalControlCockpit: React.FC = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        <TableRow>
+                        <TableRow
+                          hover
+                          onClick={() => handleInspectTrain('22436')}
+                          sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#eff6ff' } }}
+                        >
                           <TableCell sx={{ py: 0.6, fontSize: '0.7rem', fontFamily: '"JetBrains Mono", monospace', fontWeight: 700, color: '#0284c7' }}>
-                            22436 VB
+                            22436 VB 🔍
                           </TableCell>
                           <TableCell sx={{ py: 0.6, fontSize: '0.68rem' }}>07:42</TableCell>
                           <TableCell sx={{ py: 0.6, fontSize: '0.68rem', color: '#059669', fontWeight: 700 }}>
                             Green Path (Clear)
                           </TableCell>
                         </TableRow>
-                        <TableRow>
+                        <TableRow
+                          hover
+                          onClick={() => handleInspectTrain('12004')}
+                          sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#eff6ff' } }}
+                        >
                           <TableCell sx={{ py: 0.6, fontSize: '0.7rem', fontFamily: '"JetBrains Mono", monospace', fontWeight: 700, color: '#7c3aed' }}>
-                            12004 LKO
+                            12004 LKO 🔍
                           </TableCell>
                           <TableCell sx={{ py: 0.6, fontSize: '0.68rem' }}>08:15</TableCell>
                           <TableCell sx={{ py: 0.6, fontSize: '0.68rem', color: '#059669', fontWeight: 700 }}>
                             Alternate Line (0m)
                           </TableCell>
                         </TableRow>
-                        <TableRow>
+                        <TableRow
+                          hover
+                          onClick={() => handleInspectTrain('BOXN-4122')}
+                          sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#eff6ff' } }}
+                        >
                           <TableCell sx={{ py: 0.6, fontSize: '0.7rem', fontFamily: '"JetBrains Mono", monospace', fontWeight: 700, color: '#059669' }}>
-                            BOXN-4122
+                            BOXN-4122 🔍
                           </TableCell>
                           <TableCell sx={{ py: 0.6, fontSize: '0.68rem' }}>09:10</TableCell>
                           <TableCell sx={{ py: 0.6, fontSize: '0.68rem' }}>
@@ -1449,6 +1488,13 @@ export const DivisionalControlCockpit: React.FC = () => {
         open={benchmarkOpen}
         onClose={() => setBenchmarkOpen(false)}
         divisionId="DIV_DLI"
+      />
+
+      <TrainDetailDialog
+        open={trainDialogOpen}
+        train={selectedTrain}
+        onClose={() => setTrainDialogOpen(false)}
+        onSelectTrain={(t) => setSelectedTrain(t)}
       />
 
       {/* Real-time Toast Notifications */}

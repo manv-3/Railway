@@ -14,11 +14,18 @@ import SecurityIcon from '@mui/icons-material/Security';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DirectionsTransitIcon from '@mui/icons-material/DirectionsTransit';
 import { login } from '../services/api';
+import { TrainDetailDialog } from '../components/TrainDetailDialog';
+import { CorridorTrain } from '../types';
+import { CORRIDOR_TRAINS } from '../data/corridorTrains';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [loadingRole, setLoadingRole] = useState<string | null>(null);
+  const [selectedTrain, setSelectedTrain] = useState<CorridorTrain | null>(null);
+  const [trainDialogOpen, setTrainDialogOpen] = useState<boolean>(false);
+  const [trainFilter, setTrainFilter] = useState<'ALL' | 'DOWN' | 'UP' | 'DELAYED'>('ALL');
 
   const handleLaunchRole = async (roleUsername: string, targetPath: string) => {
     setLoadingRole(roleUsername);
@@ -460,6 +467,200 @@ export const LandingPage: React.FC = () => {
         </Container>
       </Box>
 
+      {/* ── 3.5. INTERACTIVE LIVE CORRIDOR TRAFFIC RADAR ── */}
+      <Box sx={{ py: 5, px: { xs: 2, md: 4 }, bgcolor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+        <Container maxWidth="xl">
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
+                <DirectionsTransitIcon sx={{ fontSize: 24, color: '#0f2b5c' }} />
+                <Typography variant="h5" sx={{ fontWeight: 800, color: '#0f2b5c' }}>
+                  Live Golden Corridor Traffic Radar
+                </Typography>
+                <Chip
+                  label="CLICK TRAIN TO INSPECT"
+                  size="small"
+                  sx={{ bgcolor: '#ecfdf5', color: '#059669', fontWeight: 800, fontSize: '0.65rem' }}
+                />
+              </Box>
+              <Typography variant="body2" sx={{ color: '#64748b', mt: 0.3 }}>
+                Real-time train running status, delay hours, priority precedence, and divisional station stop timings along NDLS ⇄ CNB (440 KM)
+              </Typography>
+            </Box>
+
+            {/* Filter Buttons */}
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Button
+                variant={trainFilter === 'ALL' ? 'contained' : 'outlined'}
+                size="small"
+                onClick={() => setTrainFilter('ALL')}
+                sx={{
+                  bgcolor: trainFilter === 'ALL' ? '#0f2b5c' : '#ffffff',
+                  color: trainFilter === 'ALL' ? '#ffffff' : '#0f2b5c',
+                  borderColor: '#cbd5e1',
+                  fontWeight: 700,
+                  fontSize: '0.75rem',
+                }}
+              >
+                All Fleet ({CORRIDOR_TRAINS.length})
+              </Button>
+              <Button
+                variant={trainFilter === 'DOWN' ? 'contained' : 'outlined'}
+                size="small"
+                onClick={() => setTrainFilter('DOWN')}
+                sx={{
+                  bgcolor: trainFilter === 'DOWN' ? '#0284c7' : '#ffffff',
+                  color: trainFilter === 'DOWN' ? '#ffffff' : '#0284c7',
+                  borderColor: '#cbd5e1',
+                  fontWeight: 700,
+                  fontSize: '0.75rem',
+                }}
+              >
+                Down Line (NDLS → CNB)
+              </Button>
+              <Button
+                variant={trainFilter === 'UP' ? 'contained' : 'outlined'}
+                size="small"
+                onClick={() => setTrainFilter('UP')}
+                sx={{
+                  bgcolor: trainFilter === 'UP' ? '#7c3aed' : '#ffffff',
+                  color: trainFilter === 'UP' ? '#ffffff' : '#7c3aed',
+                  borderColor: '#cbd5e1',
+                  fontWeight: 700,
+                  fontSize: '0.75rem',
+                }}
+              >
+                Up Line (CNB → NDLS)
+              </Button>
+              <Button
+                variant={trainFilter === 'DELAYED' ? 'contained' : 'outlined'}
+                size="small"
+                onClick={() => setTrainFilter('DELAYED')}
+                sx={{
+                  bgcolor: trainFilter === 'DELAYED' ? '#dc2626' : '#ffffff',
+                  color: trainFilter === 'DELAYED' ? '#ffffff' : '#dc2626',
+                  borderColor: '#cbd5e1',
+                  fontWeight: 700,
+                  fontSize: '0.75rem',
+                }}
+              >
+                Delayed Running
+              </Button>
+            </Box>
+          </Box>
+
+          {/* Grid of Interactive Trains */}
+          <Grid container spacing={2.5}>
+            {CORRIDOR_TRAINS.filter((t) => {
+              if (trainFilter === 'DOWN') return t.direction === 'DOWN';
+              if (trainFilter === 'UP') return t.direction === 'UP';
+              if (trainFilter === 'DELAYED') return t.delay_minutes > 0;
+              return true;
+            }).map((train) => {
+              const isLate = train.delay_minutes > 0;
+              const isMajor = train.delay_minutes >= 30;
+              const delayCol = isLate ? (isMajor ? '#dc2626' : '#d97706') : '#059669';
+              const delayBg = isLate ? (isMajor ? '#fef2f2' : '#fffbeb') : '#ecfdf5';
+
+              return (
+                <Grid item xs={12} sm={6} lg={3} key={train.train_number}>
+                  <Card
+                    onClick={() => {
+                      setSelectedTrain(train);
+                      setTrainDialogOpen(true);
+                    }}
+                    sx={{
+                      height: '100%',
+                      cursor: 'pointer',
+                      borderRadius: 2.5,
+                      border: '1px solid #cbd5e1',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        border: '1.5px solid #0f2b5c',
+                        boxShadow: '0 10px 24px rgba(15, 43, 92, 0.12)',
+                        transform: 'translateY(-3px)',
+                      },
+                    }}
+                  >
+                    <CardContent sx={{ p: 2.5 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+                          <Typography variant="h6" sx={{ fontWeight: 800, color: '#0f2b5c', fontSize: '1.05rem' }}>
+                            {train.train_number}
+                          </Typography>
+                          <Chip
+                            label={train.train_category}
+                            size="small"
+                            sx={{
+                              height: 18,
+                              fontSize: '0.6rem',
+                              fontWeight: 800,
+                              bgcolor: '#f1f5f9',
+                              color: '#334155',
+                              border: '1px solid #cbd5e1',
+                            }}
+                          />
+                        </Box>
+                        <Chip
+                          label={train.direction === 'DOWN' ? 'DN LINE' : 'UP LINE'}
+                          size="small"
+                          sx={{
+                            height: 18,
+                            fontSize: '0.62rem',
+                            fontWeight: 800,
+                            bgcolor: train.direction === 'DOWN' ? '#eff6ff' : '#f5f3ff',
+                            color: train.direction === 'DOWN' ? '#1e40af' : '#6d28d9',
+                            border: `1px solid ${train.direction === 'DOWN' ? '#bfdbfe' : '#ddd6fe'}`,
+                          }}
+                        />
+                      </Box>
+
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1e293b', lineHeight: 1.2, mb: 0.5 }}>
+                        {train.train_name}
+                      </Typography>
+
+                      <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mb: 1.5 }}>
+                        {train.source_station} → {train.destination_station}
+                      </Typography>
+
+                      <Box sx={{ p: 1, bgcolor: delayBg, borderRadius: 1.5, border: `1px solid ${delayCol}30`, mb: 1.5 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 800, color: delayCol, display: 'block', fontSize: '0.72rem' }}>
+                          ● {train.delay_display}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#475569', fontSize: '0.68rem', display: 'block', mt: 0.2 }}>
+                          {train.delay_cause || 'On schedule.'}
+                        </Typography>
+                      </Box>
+
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <Typography variant="caption" sx={{ color: '#64748b' }}>
+                          Speed: <strong>{train.current_location.speed_kmh} km/h</strong>
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#0284c7', fontWeight: 800 }}>
+                          KM {train.current_location.current_km}
+                        </Typography>
+                      </Box>
+
+                      <Divider sx={{ my: 1.2 }} />
+
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.68rem' }}>
+                          {train.station_stops.length} Division Stops
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#0f2b5c', fontWeight: 800, fontSize: '0.72rem' }}>
+                          Inspect Route & Stops →
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Container>
+      </Box>
+
       {/* ── 4. 4-TIER HIERARCHICAL OPERATIONAL LAUNCHPADS ── */}
       <Box sx={{ py: 6, px: { xs: 2, md: 4 } }}>
         <Container maxWidth="xl">
@@ -691,6 +892,14 @@ export const LandingPage: React.FC = () => {
           </Box>
         </Container>
       </Box>
+
+      {/* ── 7. TRAIN DETAIL TACTICAL INSPECTOR DIALOG ── */}
+      <TrainDetailDialog
+        open={trainDialogOpen}
+        train={selectedTrain}
+        onClose={() => setTrainDialogOpen(false)}
+        onSelectTrain={(t) => setSelectedTrain(t)}
+      />
     </Box>
   );
 };

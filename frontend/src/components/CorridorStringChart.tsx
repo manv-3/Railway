@@ -23,11 +23,14 @@ import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { MaintenanceBlock } from '../types';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { MaintenanceBlock, CorridorTrain } from '../types';
+import { getTrainByNumber } from '../data/corridorTrains';
 
 interface CorridorStringChartProps {
   selectedBlock?: MaintenanceBlock | null;
   onSelectBlock?: (block: MaintenanceBlock) => void;
+  onSelectTrain?: (train: CorridorTrain) => void;
   blocks: MaintenanceBlock[];
 }
 
@@ -165,6 +168,7 @@ const getSectionKmBounds = (sectionId: string) => {
 export const CorridorStringChart: React.FC<CorridorStringChartProps> = ({
   selectedBlock,
   onSelectBlock,
+  onSelectTrain,
   blocks,
 }) => {
   const [hoveredTrain, setHoveredTrain] = useState<TrainPath | null>(null);
@@ -562,6 +566,10 @@ export const CorridorStringChart: React.FC<CorridorStringChartProps> = ({
                 key={train.trainNo}
                 onMouseEnter={() => setHoveredTrain(train)}
                 onMouseLeave={() => setHoveredTrain(null)}
+                onClick={() => {
+                  const tData = getTrainByNumber(train.trainNo);
+                  if (tData && onSelectTrain) onSelectTrain(tData);
+                }}
                 style={{ cursor: 'pointer' }}
               >
                 {/* Wide invisible hit area */}
@@ -644,6 +652,26 @@ export const CorridorStringChart: React.FC<CorridorStringChartProps> = ({
               size="small"
               sx={{ height: 20, fontSize: '0.67rem', fontWeight: 700, bgcolor: '#ecfdf5', color: '#047857' }}
             />
+            {onSelectTrain && (
+              <Chip
+                icon={<OpenInNewIcon sx={{ fontSize: '11px !important', color: '#ffffff !important' }} />}
+                label="Inspect Train Details"
+                size="small"
+                clickable
+                onClick={() => {
+                  const tData = getTrainByNumber(hoveredTrain.trainNo);
+                  if (tData) onSelectTrain(tData);
+                }}
+                sx={{
+                  height: 20,
+                  fontSize: '0.67rem',
+                  fontWeight: 800,
+                  bgcolor: '#0f2b5c',
+                  color: '#ffffff',
+                  '&:hover': { bgcolor: '#1e3a8a' },
+                }}
+              />
+            )}
           </Box>
         ) : (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
