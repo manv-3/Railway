@@ -24,6 +24,10 @@ const LoginPage = React.lazy(() =>
   import('./pages/LoginPage').then((m) => ({ default: m.LoginPage }))
 );
 
+const LandingPage = React.lazy(() =>
+  import('./pages/LandingPage').then((m) => ({ default: m.LandingPage }))
+);
+
 const homeByRole: Record<AuthenticatedUser['tier_role'], string> = {
   BOARD_EXEC: '/board',
   ZONAL_HEAD: '/zone',
@@ -47,10 +51,12 @@ import { commandTheme } from './theme';
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
+  const isLandingPage = location.pathname === '/';
+  const hideNavbar = isLoginPage || isLandingPage;
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#070b12' }}>
-      {!isLoginPage && <Navbar />}
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default', color: 'text.primary' }}>
+      {!hideNavbar && <Navbar />}
       <Box sx={{ flexGrow: 1 }}>{children}</Box>
       {!isLoginPage && <ChatAssistantWidget />}
     </Box>
@@ -66,12 +72,13 @@ export const App: React.FC = () => {
           {/* Suspense shows a LinearProgress bar while lazy chunks load (V3-06) */}
           <Suspense fallback={<Box sx={{ width: '100%' }}><LinearProgress /></Box>}>
             <Routes>
+              <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/division" element={<ProtectedRoute allowedRoles={['DIV_CONTROLLER', 'ZONAL_HEAD', 'BOARD_EXEC']}><DivisionalControlCockpit /></ProtectedRoute>} />
               <Route path="/field" element={<ProtectedRoute allowedRoles={['FIELD_SSE', 'STATION_MASTER', 'DIV_CONTROLLER', 'ZONAL_HEAD', 'BOARD_EXEC']}><FieldStationPortal /></ProtectedRoute>} />
               <Route path="/zone" element={<ProtectedRoute allowedRoles={['ZONAL_HEAD', 'BOARD_EXEC']}><ZonalDashboard /></ProtectedRoute>} />
               <Route path="/board" element={<ProtectedRoute allowedRoles={['BOARD_EXEC']}><RailwayBoardCockpit /></ProtectedRoute>} />
-              <Route path="*" element={<Navigate to="/login" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
         </Layout>
