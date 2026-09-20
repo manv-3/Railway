@@ -1,0 +1,10 @@
+# Vercel Deployment Ignore Rules
+# Speeds up Vercel build by excluding backend Python files and large binaries
+backend/
+venv/
+.env
+infrastructure/
+docs/
+*.pdf
+*.pptx
+*.mp4
