@@ -187,26 +187,45 @@ export const Navbar: React.FC = () => {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 1,
-              pl: 1,
-              borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
+              gap: 1.2,
+              pl: 1.5,
+              borderLeft: '1px solid rgba(255, 255, 255, 0.15)',
             }}
           >
+            <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
+              <Typography variant="caption" sx={{ display: 'block', color: '#ffffff', fontWeight: 800, fontSize: '0.74rem', lineHeight: 1.1 }}>
+                {user?.full_name || user?.username || 'Officer Session'}
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#93c5fd', fontSize: '0.66rem', fontWeight: 700 }}>
+                {user?.tier_role === 'BOARD_EXEC'
+                  ? 'CRB • Apex Board'
+                  : user?.tier_role === 'ZONAL_HEAD'
+                  ? 'GM • Zonal HQ'
+                  : user?.tier_role === 'DIV_CONTROLLER'
+                  ? 'Sr. DOM • Tactical'
+                  : user?.tier_role === 'FIELD_SSE'
+                  ? 'SSE • Permanent Way'
+                  : user?.tier_role === 'STATION_MASTER'
+                  ? 'Station Master'
+                  : 'Authenticated'}
+              </Typography>
+            </Box>
             <Chip
-              label={user?.username || 'Session'}
+              label={user?.department || 'IR'}
               size="small"
               sx={{
-                bgcolor: 'rgba(16, 185, 129, 0.12)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                color: '#34d399',
-                fontWeight: 700,
-                fontSize: '0.72rem',
+                height: 20,
+                bgcolor: 'rgba(56, 189, 248, 0.15)',
+                border: '1px solid rgba(56, 189, 248, 0.35)',
+                color: '#38bdf8',
+                fontWeight: 800,
+                fontSize: '0.65rem',
               }}
             />
             <Button
               size="small"
-              onClick={() => {
-                logout();
+              onClick={async () => {
+                await logout();
                 navigate('/login');
               }}
               sx={{
@@ -214,9 +233,9 @@ export const Navbar: React.FC = () => {
                 p: 0.8,
                 borderRadius: 1.5,
                 color: '#94a3b8',
-                '&:hover': { color: '#ef4444', bgcolor: 'rgba(239, 68, 68, 0.1)' },
+                '&:hover': { color: '#ef4444', bgcolor: 'rgba(239, 68, 68, 0.15)' },
               }}
-              title="Sign Out"
+              title="Sign Out (Revoke Tokens)"
             >
               <LogoutIcon sx={{ fontSize: 18 }} />
             </Button>

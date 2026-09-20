@@ -5,6 +5,7 @@ import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { getCorridorKPIs } from '../services/api';
 import { wsService } from '../services/websocket';
+import { ApiVaultStatusCard } from '../components/ApiVaultStatusCard';
 
 export const RailwayBoardCockpit: React.FC = () => {
   const [kpis, setKpis] = useState<any>(null);
@@ -179,6 +180,11 @@ export const RailwayBoardCockpit: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Enterprise API Key Vault & Telemetry Infrastructure */}
+      <Box sx={{ mt: 3 }}>
+        <ApiVaultStatusCard />
+      </Box>
     </Container>
   );
 };

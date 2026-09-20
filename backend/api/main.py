@@ -144,3 +144,11 @@ def health_check():
         "version": "3.0.0",
         "redis": "connected" if redis_ok else "unavailable",
     }
+
+
+@app.get("/api/v1/system/config-status")
+def system_config_status():
+    """Safe diagnostic endpoint reporting key vault configuration without exposing secrets."""
+    from core.config import get_system_config_status
+    return get_system_config_status()
+

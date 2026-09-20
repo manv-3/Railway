@@ -20,6 +20,7 @@ export interface AuthenticatedUser {
 }
 
 const AUTH_TOKEN_KEY = 'railway_access_token';
+const AUTH_REFRESH_TOKEN_KEY = 'railway_refresh_token';
 const AUTH_USER_KEY = 'railway_user';
 
 apiClient.interceptors.request.use((config) => {
@@ -34,23 +35,36 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes('/auth/login') &&
+      !originalRequest.url?.includes('/auth/refresh')
+    ) {
       originalRequest._retry = true;
-      const currentUser = getAuthenticatedUser();
-      const username = currentUser?.username || 'div_controller';
-      try {
-        const body = new URLSearchParams({ username, password: 'demo123' });
-        const res = await axios.post<{ access_token: string; user: AuthenticatedUser }>(
-          `${API_BASE_URL}/auth/login`,
-          body,
-          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-        );
-        localStorage.setItem(AUTH_TOKEN_KEY, res.data.access_token);
-        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(res.data.user));
-        originalRequest.headers.Authorization = `Bearer ${res.data.access_token}`;
-        return apiClient(originalRequest);
-      } catch (loginErr) {
-        return Promise.reject(error);
+      const refreshToken = localStorage.getItem(AUTH_REFRESH_TOKEN_KEY);
+      if (refreshToken) {
+        try {
+          const res = await axios.post<{
+            access_token: string;
+            refresh_token: string;
+            user: AuthenticatedUser;
+          }>(`${API_BASE_URL}/auth/refresh`, { refresh_token: refreshToken });
+
+          localStorage.setItem(AUTH_TOKEN_KEY, res.data.access_token);
+          if (res.data.refresh_token) {
+            localStorage.setItem(AUTH_REFRESH_TOKEN_KEY, res.data.refresh_token);
+          }
+          if (res.data.user) {
+            localStorage.setItem(AUTH_USER_KEY, JSON.stringify(res.data.user));
+          }
+          originalRequest.headers.Authorization = `Bearer ${res.data.access_token}`;
+          return apiClient(originalRequest);
+        } catch (refreshErr) {
+          // Token expired or revoked
+          logout();
+          return Promise.reject(refreshErr);
+        }
       }
     }
     return Promise.reject(error);
@@ -70,17 +84,34 @@ export const getAuthenticatedUser = (): AuthenticatedUser | null => {
 
 export const login = async (username: string, password: string): Promise<AuthenticatedUser> => {
   const body = new URLSearchParams({ username, password });
-  const response = await apiClient.post<{ access_token: string; user: AuthenticatedUser }>('/auth/login', body, {
+  const response = await apiClient.post<{
+    access_token: string;
+    refresh_token?: string;
+    user: AuthenticatedUser;
+  }>('/auth/login', body, {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   });
   localStorage.setItem(AUTH_TOKEN_KEY, response.data.access_token);
+  if (response.data.refresh_token) {
+    localStorage.setItem(AUTH_REFRESH_TOKEN_KEY, response.data.refresh_token);
+  }
   localStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.data.user));
   return response.data.user;
 };
 
-export const logout = (): void => {
-  localStorage.removeItem(AUTH_TOKEN_KEY);
-  localStorage.removeItem(AUTH_USER_KEY);
+export const logout = async (): Promise<void> => {
+  try {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (token) {
+      await apiClient.post('/auth/logout', {});
+    }
+  } catch {
+    // Ignore server error during logout cleanup
+  } finally {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_REFRESH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
+  }
 };
 
 export const getCorridorStations = async (): Promise<Station[]> => {
@@ -352,5 +383,20 @@ export const getOptimizerBenchmark = async (divisionId = 'DIV_DLI'): Promise<Opt
   return res.data;
 };
 
+export interface SystemConfigStatus {
+  status: string;
+  environment: string;
+  database: { status: string; url: string };
+  redis: { status: string; url: string };
+  vault_keys: Record<string, { configured: boolean; masked_value: string; description: string }>;
+}
 
+export const getSystemConfigStatus = async (): Promise<SystemConfigStatus> => {
+  const res = await apiClient.get<SystemConfigStatus>('/api/v1/system/config-status');
+  return res.data;
+};
 
+export const getPlatformUsers = async (): Promise<{ source: string; count: number; users: any[] }> => {
+  const res = await apiClient.get<{ source: string; count: number; users: any[] }>('/auth/users');
+  return res.data;
+};
