@@ -3,6 +3,7 @@ Redis Token-Bucket Rate Limiter Middleware - PS 26027 Railway AI Platform.
 Applies per-endpoint rate limits; gracefully degrades if Redis is unavailable.
 """
 
+import os
 import time
 import logging
 from fastapi import Request, Response
@@ -56,8 +57,8 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
 
     async def dispatch(self, request: Request, call_next) -> Response:
-        # Skip rate limiting for health/metrics endpoints
-        if request.url.path in ("/health", "/metrics", "/", "/docs", "/openapi.json"):
+        # Skip rate limiting for OPTIONS preflight and health/metrics endpoints
+        if request.method == "OPTIONS" or request.url.path in ("/health", "/metrics", "/", "/docs", "/openapi.json"):
             return await call_next(request)
 
         client = get_redis()
@@ -68,6 +69,8 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
         client_ip = _get_client_ip(request)
         path = request.url.path
         limit = _get_rate_limit(path)
+        if os.getenv("APP_ENV", "development") != "production" and path.startswith("/auth/login"):
+            limit = 120
         window = WINDOW_SECONDS
 
         # Sliding window key: <ip>:<path_prefix>:<current_window>
@@ -87,6 +90,7 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
                     "Rate limit exceeded: IP=%s Path=%s Count=%d Limit=%d",
                     client_ip, path, current_count, limit
                 )
+                origin = request.headers.get("origin", "*")
                 return JSONResponse(
                     status_code=429,
                     content={
@@ -98,7 +102,9 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
                         "Retry-After": str(retry_after),
                         "X-RateLimit-Limit": str(limit),
                         "X-RateLimit-Remaining": "0",
-                        "X-RateLimit-Reset": str(int(time.time()) + retry_after)
+                        "X-RateLimit-Reset": str(int(time.time()) + retry_after),
+                        "Access-Control-Allow-Origin": origin,
+                        "Access-Control-Allow-Credentials": "true",
                     }
                 )
 

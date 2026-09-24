@@ -39,7 +39,8 @@ apiClient.interceptors.response.use(
       error.response?.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url?.includes('/auth/login') &&
-      !originalRequest.url?.includes('/auth/refresh')
+      !originalRequest.url?.includes('/auth/refresh') &&
+      !originalRequest.url?.includes('/auth/logout')
     ) {
       originalRequest._retry = true;
       const refreshToken = localStorage.getItem(AUTH_REFRESH_TOKEN_KEY);
@@ -62,7 +63,7 @@ apiClient.interceptors.response.use(
           return apiClient(originalRequest);
         } catch (refreshErr) {
           // Token expired or revoked
-          logout();
+          await logout();
           return Promise.reject(refreshErr);
         }
       }
@@ -83,19 +84,25 @@ export const getAuthenticatedUser = (): AuthenticatedUser | null => {
 };
 
 export const login = async (username: string, password: string): Promise<AuthenticatedUser> => {
-  const body = new URLSearchParams({ username, password });
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_REFRESH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+
+  const cleanUser = username.trim();
+  const cleanPass = password.trim();
+
   const response = await apiClient.post<{
     access_token: string;
     refresh_token?: string;
     user: AuthenticatedUser;
-  }>('/auth/login', body, {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  });
+  }>('/auth/login', { username: cleanUser, password: cleanPass });
+
   localStorage.setItem(AUTH_TOKEN_KEY, response.data.access_token);
   if (response.data.refresh_token) {
     localStorage.setItem(AUTH_REFRESH_TOKEN_KEY, response.data.refresh_token);
   }
   localStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.data.user));
+  window.dispatchEvent(new Event('railway-auth-changed'));
   return response.data.user;
 };
 
@@ -111,6 +118,7 @@ export const logout = async (): Promise<void> => {
     localStorage.removeItem(AUTH_TOKEN_KEY);
     localStorage.removeItem(AUTH_REFRESH_TOKEN_KEY);
     localStorage.removeItem(AUTH_USER_KEY);
+    window.dispatchEvent(new Event('railway-auth-changed'));
   }
 };
 

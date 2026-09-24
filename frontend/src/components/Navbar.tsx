@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Chip } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import TrainIcon from '@mui/icons-material/Train';
@@ -10,7 +10,14 @@ import { getAuthenticatedUser, logout } from '../services/api';
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = getAuthenticatedUser();
+  const [user, setUser] = useState(getAuthenticatedUser());
+
+  useEffect(() => {
+    setUser(getAuthenticatedUser());
+    const onAuthChange = () => setUser(getAuthenticatedUser());
+    window.addEventListener('railway-auth-changed', onAuthChange);
+    return () => window.removeEventListener('railway-auth-changed', onAuthChange);
+  }, [location.pathname]);
 
   const navItems = [
     { label: 'Tier 3: Divisional Control', path: '/division', role: 'Sr. DOM / Tactical Core' },

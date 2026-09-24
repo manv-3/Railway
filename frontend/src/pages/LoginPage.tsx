@@ -78,22 +78,32 @@ export const LoginPage: React.FC = () => {
 
   const handleLogin = async (e?: React.FormEvent, customUser?: string) => {
     if (e) e.preventDefault();
-    const userToLogin = customUser || username;
+    const userToLogin = (customUser || username).trim();
+    const passToLogin = password.trim();
     setError('');
     setLoading(true);
     try {
-      const user = await login(userToLogin, password);
+      const user = await login(userToLogin, passToLogin);
       navigate(destinationByRole[user.tier_role] || '/division');
-    } catch {
-      setError('Authentication failed. Check credentials or select a demo role.');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      const detail =
+        err.response?.data?.detail ||
+        err.response?.data?.error ||
+        err.message ||
+        'Authentication failed. Please verify credentials or select a verified demo persona below.';
+      setError(typeof detail === 'string' ? detail : JSON.stringify(detail));
     } finally {
       setLoading(false);
     }
   };
 
-  const selectRole = (roleId: string) => {
+  const selectRole = (roleId: string, autoLaunch = false) => {
     setUsername(roleId);
     setPassword('demo123');
+    if (autoLaunch) {
+      handleLogin(undefined, roleId);
+    }
   };
 
   return (
@@ -279,9 +289,36 @@ export const LoginPage: React.FC = () => {
                     <Typography variant="caption" sx={{ display: 'block', color: role.color, fontWeight: 700, fontSize: '0.7rem' }}>
                       {role.tier}
                     </Typography>
-                    <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.68rem', display: 'block', mt: 0.2 }}>
-                      {role.desc}
-                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.5 }}>
+                      <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.68rem', flex: 1 }}>
+                        {role.desc}
+                      </Typography>
+                      <Button
+                        size="small"
+                        variant={isSelected ? 'contained' : 'outlined'}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          selectRole(role.id, true);
+                        }}
+                        sx={{
+                          ml: 1,
+                          height: 22,
+                          fontSize: '0.66rem',
+                          fontWeight: 800,
+                          textTransform: 'none',
+                          px: 1.2,
+                          bgcolor: isSelected ? '#0f2b5c' : 'transparent',
+                          color: isSelected ? '#ffffff' : '#0f2b5c',
+                          borderColor: '#0f2b5c',
+                          '&:hover': {
+                            bgcolor: '#1e3a8a',
+                            color: '#ffffff',
+                          },
+                        }}
+                      >
+                        Sign In &rarr;
+                      </Button>
+                    </Box>
                   </Box>
                 </Grid>
               );
