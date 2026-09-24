@@ -204,7 +204,10 @@ def seed_stations_and_sections(session):
             station_count += 1
     
     session.commit()
-    print(f"   ✅ Created {station_count} stations")
+    if station_count > 0:
+        print(f"   ✅ Created {station_count} new stations")
+    else:
+        print(f"   ✅ Stations verified (already populated)")
     
     # Seed sections
     section_count = 0
@@ -216,7 +219,10 @@ def seed_stations_and_sections(session):
             section_count += 1
     
     session.commit()
-    print(f"   ✅ Created {section_count} track sections")
+    if section_count > 0:
+        print(f"   ✅ Created {section_count} new track sections")
+    else:
+        print(f"   ✅ Track sections verified (already populated)")
 
 
 def seed_machinery(session):
@@ -247,7 +253,7 @@ def seed_machinery(session):
             session.add(machine)
     
     session.commit()
-    print(f"   ✅ Created {len(machinery_data)} maintenance machines")
+    print(f"   ✅ Machinery fleet verified ({len(machinery_data)} units)")
 
 
 def seed_trains(session):
@@ -267,7 +273,10 @@ def seed_trains(session):
             train_count += 1
     
     session.commit()
-    print(f"   ✅ Created {train_count} train schedules")
+    if train_count > 0:
+        print(f"   ✅ Created {train_count} new train schedules")
+    else:
+        print(f"   ✅ Train schedules verified ({len(trains)} active trains)")
     print(f"      ├── Vande Bharat: {sum(1 for t in trains if 'VANDE_BHARAT' in t['train_category'])}")
     print(f"      ├── Rajdhani/Shatabdi: {sum(1 for t in trains if t['train_category'] in ['RAJDHANI', 'SUPERFAST_EXPRESS'] and t['priority_precedence'] == 1)}")
     print(f"      ├── Express: {sum(1 for t in trains if t['train_category'] == 'SUPERFAST_EXPRESS' and t['priority_precedence'] == 2)}")
@@ -293,7 +302,10 @@ def seed_maintenance_requests(session):
             request_count += 1
     
     session.commit()
-    print(f"   ✅ Created {request_count} maintenance requests")
+    if request_count > 0:
+        print(f"   ✅ Created {request_count} new maintenance requests")
+    else:
+        print(f"   ✅ Maintenance requests verified ({len(requests)} in active backlog)")
     print(f"      ├── TMS (Track): {sum(1 for r in requests if r['department'] == 'TMS')}")
     print(f"      ├── SMMS (Signal): {sum(1 for r in requests if r['department'] == 'SMMS')}")
     print(f"      └── TDMS (Electrical): {sum(1 for r in requests if r['department'] == 'TDMS')}")
