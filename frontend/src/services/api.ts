@@ -1,10 +1,39 @@
 import axios from 'axios';
 import { Station, Section, MaintenanceRequest, MaintenanceBlock, OptimizationMetrics } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+export const getApiBaseUrl = (): string => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (typeof window !== 'undefined') {
+    const { protocol, hostname } = window.location;
+
+    // 1. If HTTPS (e.g. Vercel, SSL reverse proxy, ngrok):
+    // Do not call unencrypted http:// to avoid browser Mixed Content blocks
+    if (protocol === 'https:') {
+      if (envUrl && envUrl.startsWith('https://')) return envUrl;
+      return ''; // Relative proxy through Vercel rewrites / host
+    }
+
+    // 2. If client is accessing from a remote/LAN IP (e.g. 192.168.x.x, 10.x.x.x)
+    // and envUrl is localhost or empty, route requests to that machine's port 8000
+    if (
+      hostname !== 'localhost' &&
+      hostname !== '127.0.0.1' &&
+      (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1'))
+    ) {
+      return `${protocol}//${hostname}:8000`;
+    }
+
+    if (envUrl) {
+      return envUrl;
+    }
+
+    return `${protocol}//${hostname || 'localhost'}:8000`;
+  }
+  return envUrl || 'http://localhost:8000';
+};
 
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -24,6 +53,9 @@ const AUTH_REFRESH_TOKEN_KEY = 'railway_refresh_token';
 const AUTH_USER_KEY = 'railway_user';
 
 apiClient.interceptors.request.use((config) => {
+  if (!config.baseURL || config.baseURL === 'http://localhost:8000') {
+    config.baseURL = getApiBaseUrl();
+  }
   const token = localStorage.getItem(AUTH_TOKEN_KEY);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -50,7 +82,7 @@ apiClient.interceptors.response.use(
             access_token: string;
             refresh_token: string;
             user: AuthenticatedUser;
-          }>(`${API_BASE_URL}/auth/refresh`, { refresh_token: refreshToken });
+          }>(`${getApiBaseUrl()}/auth/refresh`, { refresh_token: refreshToken });
 
           localStorage.setItem(AUTH_TOKEN_KEY, res.data.access_token);
           if (res.data.refresh_token) {

@@ -87,11 +87,14 @@ export const LoginPage: React.FC = () => {
       navigate(destinationByRole[user.tier_role] || '/division');
     } catch (err: any) {
       console.error('Login error:', err);
-      const detail =
+      let detail =
         err.response?.data?.detail ||
         err.response?.data?.error ||
         err.message ||
         'Authentication failed. Please verify credentials or select a verified demo persona below.';
+      if (typeof detail === 'string' && (detail.toLowerCase().includes('network error') || detail.toLowerCase().includes('failed to fetch'))) {
+        detail = 'Cannot reach Railway AI API server (port 8000). Please check backend network connectivity or reload.';
+      }
       setError(typeof detail === 'string' ? detail : JSON.stringify(detail));
     } finally {
       setLoading(false);

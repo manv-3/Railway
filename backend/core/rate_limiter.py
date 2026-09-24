@@ -69,8 +69,8 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
         client_ip = _get_client_ip(request)
         path = request.url.path
         limit = _get_rate_limit(path)
-        if os.getenv("APP_ENV", "development") != "production" and path.startswith("/auth/login"):
-            limit = 120
+        if os.getenv("APP_ENV", "development") != "production":
+            limit = 600
         window = WINDOW_SECONDS
 
         # Sliding window key: <ip>:<path_prefix>:<current_window>
@@ -90,7 +90,16 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
                     "Rate limit exceeded: IP=%s Path=%s Count=%d Limit=%d",
                     client_ip, path, current_count, limit
                 )
-                origin = request.headers.get("origin", "*")
+                response_headers = {
+                    "Retry-After": str(retry_after),
+                    "X-RateLimit-Limit": str(limit),
+                    "X-RateLimit-Remaining": "0",
+                    "X-RateLimit-Reset": str(int(time.time()) + retry_after),
+                }
+                origin = request.headers.get("origin")
+                if origin:
+                    response_headers["Access-Control-Allow-Origin"] = origin
+                    response_headers["Access-Control-Allow-Credentials"] = "true"
                 return JSONResponse(
                     status_code=429,
                     content={
@@ -98,14 +107,7 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
                         "detail": f"Too many requests. Limit is {limit} requests per minute.",
                         "retry_after_seconds": retry_after
                     },
-                    headers={
-                        "Retry-After": str(retry_after),
-                        "X-RateLimit-Limit": str(limit),
-                        "X-RateLimit-Remaining": "0",
-                        "X-RateLimit-Reset": str(int(time.time()) + retry_after),
-                        "Access-Control-Allow-Origin": origin,
-                        "Access-Control-Allow-Credentials": "true",
-                    }
+                    headers=response_headers,
                 )
 
             remaining = max(0, limit - current_count)

@@ -1,3 +1,5 @@
+import { getApiBaseUrl } from './api';
+
 type EventHandler = (data: any) => void;
 
 class CorridorWebSocketService {
@@ -13,11 +15,14 @@ class CorridorWebSocketService {
   public connect() {
     let wsUrl = import.meta.env.VITE_WS_URL;
     if (!wsUrl) {
-      const apiUrl = import.meta.env.VITE_API_URL;
+      const apiUrl = getApiBaseUrl();
       if (apiUrl) {
         const wsProto = apiUrl.startsWith('https://') ? 'wss://' : 'ws://';
         const host = apiUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
         wsUrl = `${wsProto}${host}/ws/corridor`;
+      } else if (typeof window !== 'undefined') {
+        const wsProto = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        wsUrl = `${wsProto}${window.location.host}/ws/corridor`;
       } else {
         wsUrl = 'ws://localhost:8000/ws/corridor';
       }
